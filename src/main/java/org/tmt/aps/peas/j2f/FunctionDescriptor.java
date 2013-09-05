@@ -1,0 +1,44 @@
+package org.tmt.aps.peas.j2f;
+
+import java.util.List;
+
+public class FunctionDescriptor {
+	
+	String functionName;
+	String author;
+	String functionShortDesc;
+	String functionLongDesc;
+	List<ArgumentDescriptor> functionArgs;
+	public String getFunctionName() {
+		return functionName;
+	}
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	public String getFunctionShortDesc() {
+		return functionShortDesc;
+	}
+	public void setFunctionShortDesc(String functionShortDesc) {
+		this.functionShortDesc = functionShortDesc;
+	}
+	public String getFunctionLongDesc() {
+		return functionLongDesc;
+	}
+	public void setFunctionLongDesc(String functionLongDesc) {
+		this.functionLongDesc = functionLongDesc;
+	}
+	public List<ArgumentDescriptor> getFunctionArgs() {
+		return functionArgs;
+	}
+	public void setFunctionArgs(List<ArgumentDescriptor> functionArgs) {
+		this.functionArgs = functionArgs;
+	} 
+	
+	
+}
