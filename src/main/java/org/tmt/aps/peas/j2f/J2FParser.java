@@ -30,7 +30,7 @@ public class J2FParser {
 			boolean inBlock = false;
 			while ((line = in.readLine()) != null) {
 
-				if (line.indexOf("<function>") >= 0) {
+				if (line.indexOf("<function") >= 0) {
 					inBlock = true;
 				}
 				if (inBlock) {
@@ -84,7 +84,7 @@ public class J2FParser {
   		
   		// 
   		Element function = (Element)doc.getElementsByTagName("function").item(0);
-  		fd.setFunctionName(getTagValue(function, "function-name"));
+  		fd.setFunctionName(function.getAttribute("name"));
   		fd.setAuthor(getTagValue(function, "author"));
   		fd.setFunctionShortDesc(getTagValue(function, "function-short-desc"));
   		fd.setFunctionLongDesc(getTagValue(function, "function-long-desc"));
@@ -97,13 +97,13 @@ public class J2FParser {
  		for (int i=0; i<argNodeList.getLength(); i++) {
  			ArgumentDescriptor argDesc = new ArgumentDescriptor();
  			Element argElement = (Element)argNodeList.item(i);
- 			argDesc.setArgName(getTagValue(argElement, "arg-name"));
- 			argDesc.setArgShortDesc(getTagValue(argElement, "arg-short-desc"));
- 			argDesc.setArgLongDesc(getTagValue(argElement, "arg-long-desc"));
- 			argDesc.setArgDataType(getTagValue(argElement, "arg-data-type"));
- 			argDesc.setArgIsArray(getTagValue(argElement, "arg-is-array").equals("TRUE"));
- 			argDesc.setArgInOut(getTagValue(argElement, "arg-in-out"));
- 			argDesc.setArgUnits(getTagValue(argElement, "arg-units"));
+ 			argDesc.setArgName(getTagValue(argElement, "name"));
+ 			argDesc.setArgShortDesc(getTagValue(argElement, "short-desc"));
+ 			argDesc.setArgLongDesc(getTagValue(argElement, "long-desc"));
+ 			argDesc.setArgDataType(getTagValue(argElement, "data-type"));
+ 			argDesc.setArgDimension(new Integer(getTagValue(argElement, "dimension")));
+ 			argDesc.setArgInOut(getTagValue(argElement, "in-out"));
+ 			argDesc.setArgUnits(getTagValue(argElement, "units"));
  			argDescs.add(argDesc);
  		}
   		fd.setFunctionArgs(argDescs);

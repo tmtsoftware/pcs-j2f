@@ -8,7 +8,7 @@ public class ArgumentDescriptor {
 	String argDataType;
 	String argUnits;
 	String argInOut;
-	boolean argIsArray;
+	int argDimension;
 	
 	public String getArgName() {
 		return argName;
@@ -47,12 +47,6 @@ public class ArgumentDescriptor {
 	public void setArgInOut(String argInOut) {
 		this.argInOut = argInOut;
 	}
-	public boolean isArgIsArray() {
-		return argIsArray;
-	}
-	public void setArgIsArray(boolean argIsArray) {
-		this.argIsArray = argIsArray;
-	}
 	public String getArgCDataType() {
 		return DataTypeMapper.getNativeFromFortran(argDataType.toUpperCase());
 	}
@@ -72,5 +66,11 @@ public class ArgumentDescriptor {
 	}	
 	public boolean isOutput() {
 		return (argInOut.toUpperCase().equals("OUT"));
+	}
+	public int getArgDimension() {
+		return argDimension;
+	}
+	public void setArgDimension(int argDimension) {
+		this.argDimension = argDimension;
 	}
 }

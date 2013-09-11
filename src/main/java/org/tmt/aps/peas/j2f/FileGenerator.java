@@ -26,14 +26,16 @@ public class FileGenerator {
 		content.append("\tstatic { System.loadLibrary(\"" + nameGenerator.getLibraryName() + "\"); }\n");
 		content.append("\t// TODO: We need to write the public method that calls the private and unpacks output arrays\n");
 		content.append("\n");
-		content.append("\tpublic " + nameGenerator.getJavaOutClassName() + " " + nameGenerator.getJavaMethodName() + "(");
+		content.append("\tpublic Object[] " + nameGenerator.getJavaMethodName() + "(");
 		content.append(nameGenerator.getJavaMethodSignature() + ") {\n");
 		
 		// create output param definitions
+		int outputCount = 0;
 		content.append("\t\t// Output variable definitions\n");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			if (argDesc.isOutput()) {				
+				outputCount++;
 				content.append("\t\t" + argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + "_outArray[] = new " +
 						argDesc.getArgJavaDataType() + "[1];\n");
 			}
@@ -52,26 +54,17 @@ public class FileGenerator {
 		content.append(");\n");
 		
 		content.append("\t\t// Assign output variables\n");
-		content.append("\t\t" + nameGenerator.getJavaOutClassName() + " out = new " + nameGenerator.getJavaOutClassName() + "();\n");
+		content.append("\t\tObject[] out = new Object[" + outputCount + "];\n");
+		int outIndex = 0;
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			if (argDesc.isOutput()) {				
-				content.append("\t\t" + "out." + argDesc.getArgName() + " = " + argDesc.getArgName() +  "_outArray[0];\n");
+				content.append("\t\t" + "out[" + outIndex++ + "] = " + argDesc.getArgName() +  "_outArray[0];\n");
 			}
 		}	
 		content.append("\t\treturn out;\n");
 		content.append("\t}\n");
 			
-		content.append("\t// output inner class\n");
-		content.append("\tclass " + nameGenerator.getJavaOutClassName() + " {\n");
-		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext(); ) {
-			ArgumentDescriptor argDesc = it.next();
-			if (argDesc.isOutput()) {				
-				content.append("\t\tpublic " + argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + ";\n");
-			}
-		}	
-		content.append("\t}\n");
-
 		content.append("}");
 		
 		// create and write to file
@@ -175,12 +168,12 @@ public class FileGenerator {
 		content.append(nameGenerator.getLibraryFileName() + ": " + nameGenerator.getFortranObjectFileName() + " " +  nameGenerator.getCObjectFileName()+ "\n");
 		// FIXME: library files g2c and gfortran need to be inputs, not constants
 		content.append("\t/usr/bin/gcc --shared -o " + nameGenerator.getLibraryFileName() + " " + nameGenerator.getCObjectFileName() + 
-				" " + nameGenerator.getFortranObjectFileName() + " /usr/lib/libg2c.a /usr/lib/libgfortran.so.2 \n\n");
+				" " + nameGenerator.getFortranObjectFileName() + " -lgfortran \n\n");
 		
 		content.append(nameGenerator.getCObjectFileName() + ": " + nameGenerator.getCSourceFileName() + " " + nameGenerator.getJNIHeaderFileName() + "\n");
 		// FIXME: include files need to be inputs, not constants
 		content.append("\tgcc -c -o " + nameGenerator.getCObjectFileName() + 
-				" -I/usr/lib/jvm/java-1.5.0-sun/include -I/usr/lib/jvm/java-1.5.0-sun/include/linux " + nameGenerator.getCSourceFileName() + "\n\n");
+				" -I/usr/lib/jvm/java-1.6.0-openjdk/include -I/usr/lib/jvm/java-1.6.0-openjdk/include/linux " + nameGenerator.getCSourceFileName() + " -fPIC \n\n");
 		
 		content.append(nameGenerator.getJNIHeaderFileName() + ": " + nameGenerator.getJavaClassFileName() + "\n");
 		content.append("\tjavah -jni org.tmt.aps.peas.lang.interop." + nameGenerator.getJavaClassName() + "\n\n");
@@ -189,7 +182,7 @@ public class FileGenerator {
 		content.append("\tjavac -d . " + nameGenerator.getJavaSourceFileName() + "\n\n");
 		
 		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName() + "\n");
-		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " " + nameGenerator.getFortranSourceFileName() + "\n\n");
+		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " " + nameGenerator.getFortranSourceFileName() + " -fPIC \n\n");
 
 		content.append("clean:\n");
 		content.append("\trm *.so *.class *.h *.o\n");
@@ -208,7 +201,7 @@ public class FileGenerator {
 
                 // execute makefile
                 // copy fortran source file to staging directory
-                content.append("cp " + fortranFileName + " " + stagingDirectory.getAbsolutePath() + "\n");
+                content.append("cp " + currentDir + "/" + fortranFileName + " " + stagingDirectory.getAbsolutePath() + "\n");
                 content.append("cd " + stagingDirectory.getAbsolutePath() + "\n");
                 content.append("make" + "\n");
 
@@ -216,7 +209,7 @@ public class FileGenerator {
 
                 // copy Java and library file to current directory
                 content.append("cp " + "*.java" + " " + currentDir + "\n");
-                content.append("cp " + nameGenerator.getLibraryFileName() + " " + currentDir + "\n");
+                content.append("cp " + nameGenerator.getLibraryFileName() + " " + "/opt/apps/lib" + "\n");
 
 
 		// create and write to file

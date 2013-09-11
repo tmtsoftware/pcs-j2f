@@ -11,7 +11,7 @@ public class J2FCodeGenerator {
 		
 		// the only input arguments should be:
 		// the path to the fortran file to generate from
-	    // the java package name (if absent, then no package will be used)
+	    	// the java package name (if absent, then no package will be used)
 		// the code generator will create a staging temp directory, and output a Java class and a library 
 		
 		String fortranFile = args[0];
@@ -19,10 +19,17 @@ public class J2FCodeGenerator {
 		if (args.length > 1) {
 			javaPackage = args[1];
 		}
-				
+		String currentDir = new File(".").getAbsolutePath();
+
+		J2FCodeGenerator codeGenerator = new J2FCodeGenerator();
+		codeGenerator.generate(fortranFile, javaPackage, currentDir);
+		
+	}
+	
+	public String generate(String fortranFile, String javaPackage, String currentDir) {
+		
 		try {
 		File stagingDirectory = createTempDir();
-		String currentDir = new File(".").getAbsolutePath();
 		System.out.println("currentDir = " + currentDir);
 				
 		// Parse the file
@@ -50,7 +57,9 @@ public class J2FCodeGenerator {
 		
 		} catch (Exception e) {
 			e.printStackTrace();
+			return e.getMessage();
 		}
+		return "success";
 	}
 	
 	private static void executeShellCommand(String command) {
