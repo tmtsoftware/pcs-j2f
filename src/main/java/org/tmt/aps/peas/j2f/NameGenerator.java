@@ -74,7 +74,7 @@ public class NameGenerator {
 	
 	public String getNativeMethodSignature() {
 
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buf = new StringBuffer("RetVal retVal, ");
 		
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
@@ -93,7 +93,7 @@ public class NameGenerator {
 
 	public String getJavaMethodSignature() {
 
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buf = new StringBuffer("RetVal retVal, ");
 		
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
@@ -111,7 +111,7 @@ public class NameGenerator {
 	public String getCFunctionSignature() {
 		StringBuffer buf = new StringBuffer();
 
-		buf.append("JNIEnv *env, jobject obj, ");		
+		buf.append("JNIEnv *env, jobject obj, jobject jretval, ");		
 
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
