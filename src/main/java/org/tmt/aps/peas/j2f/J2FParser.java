@@ -108,6 +108,31 @@ public class J2FParser {
  		}
   		fd.setFunctionArgs(argDescs);
   		
+  		// create the function args for generated classes (add in array size arguments)
+  		List<ArgumentDescriptor> generatedArgDescs = new ArrayList<ArgumentDescriptor>();
+  		for (ArgumentDescriptor argDesc : argDescs) {
+  			
+  			generatedArgDescs.add(argDesc);
+  			
+  			// if it is an array, we need additional arguments for the size of each dimension
+   			for (int i=0; i<argDesc.getArgDimension(); i++) {
+   				ArgumentDescriptor sizeArgDesc = new ArgumentDescriptor();
+   				sizeArgDesc.setArgName(argDesc.getArgName() + "_size_" + (i+1));
+   				sizeArgDesc.setArgShortDesc("dim" + (i+1) + " size");
+   				sizeArgDesc.setArgDataType("INTEGER");
+   				sizeArgDesc.setArgDimension(new Integer(0));
+   				sizeArgDesc.setArgInOut("IN");
+   				sizeArgDesc.setArgUnits("None");
+   				generatedArgDescs.add(sizeArgDesc);
+   				argDesc.add(sizeArgDesc);  // add to the parent arg desc too for ease of access
+  				
+  			}
+   			
+  		}
+  		fd.setGeneratedFunctionArgs(generatedArgDescs);
+  		
+  		
+  		
   		return fd;
   	}
   	

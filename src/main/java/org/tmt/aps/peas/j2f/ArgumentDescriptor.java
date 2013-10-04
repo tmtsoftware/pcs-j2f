@@ -1,5 +1,8 @@
 package org.tmt.aps.peas.j2f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArgumentDescriptor {
 
 	String argName;
@@ -9,6 +12,7 @@ public class ArgumentDescriptor {
 	String argUnits;
 	String argInOut;
 	int argDimension;
+	List<ArgumentDescriptor> childArgs = new ArrayList();
 	
 	public String getArgName() {
 		return argName;
@@ -72,5 +76,14 @@ public class ArgumentDescriptor {
 	}
 	public void setArgDimension(int argDimension) {
 		this.argDimension = argDimension;
+	}
+	public void add(ArgumentDescriptor sizeArgDesc) {
+		childArgs.add(sizeArgDesc);
+	}
+	public List<ArgumentDescriptor> getChildArgs() {
+		return childArgs;
+	}
+	public void setChildArgs(List<ArgumentDescriptor> childArgs) {
+		this.childArgs = childArgs;
 	}
 }

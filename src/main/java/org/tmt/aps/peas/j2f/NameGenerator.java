@@ -82,7 +82,11 @@ public class NameGenerator {
 			if (argDesc.isOutput()) {				
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + "[], "); 
 			} else {
-				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + ", "); 				
+				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName());
+				for (int i=0; i<argDesc.getArgDimension(); i++) {
+					buf.append("[]");
+				}
+				buf.append(", "); 				
 			}
 		}
 		buf.deleteCharAt(buf.length()-2);
@@ -99,7 +103,11 @@ public class NameGenerator {
 			ArgumentDescriptor argDesc = it.next();
 			
 			if (!argDesc.isOutput()) {				
-				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + ", "); 				
+				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName());
+				for (int i=0; i<argDesc.getArgDimension(); i++) {
+					buf.append("[]");
+				}
+				buf.append(", "); 				
 			}
 		}
 		buf.deleteCharAt(buf.length()-2);
@@ -116,7 +124,7 @@ public class NameGenerator {
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			
-			if (argDesc.isOutput()) {				
+			if (argDesc.isOutput() || argDesc.getArgDimension() > 0) {				
 				// TODO: generalize the output
 				buf.append(argDesc.getArgJNIDataType() + "Array " + argDesc.getArgName() + ", "); 
 			} else {
@@ -137,6 +145,16 @@ public class NameGenerator {
 		} else {		
 			return functionName + "_";
 		}
+	}
+
+	public String getFFESourceFileName() {
+		// TODO Auto-generated method stub
+		return "ffe_" + fortranFileName;
+	}
+
+	public String getFFEFunctionName() {
+		// TODO Auto-generated method stub
+		return "ffe_" + functionName;
 	}
 	
 	

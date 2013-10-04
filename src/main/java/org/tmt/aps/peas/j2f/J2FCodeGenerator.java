@@ -47,6 +47,7 @@ public class J2FCodeGenerator {
 		
 		fileGenerator.generateJavaSourceFile(stagingDirectory);
 		fileGenerator.generateCSourceFile(stagingDirectory);
+		fileGenerator.generateFFESourceFile(stagingDirectory);
 		fileGenerator.generateMakefile(stagingDirectory);
 		fileGenerator.generateScript(stagingDirectory, fortranFileName, currentDir);
 
