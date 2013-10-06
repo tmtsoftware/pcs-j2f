@@ -140,11 +140,11 @@ public class NameGenerator {
 		// I think there are rules here with underscores in the name depending on if there are underscores in the fortran 
 		// subroutine name
 		
-		if (functionName.indexOf("_") >= 0) {
-			return functionName + "__";
-		} else {		
-			return functionName + "_";
-		}
+		//if (getFFEFunctionName().indexOf("_") >= 0) {
+		//	return getFFEFunctionName() + "__";
+		//} else {		
+			return getFFEFunctionName() + "_";
+		//}
 	}
 
 	public String getFFESourceFileName() {

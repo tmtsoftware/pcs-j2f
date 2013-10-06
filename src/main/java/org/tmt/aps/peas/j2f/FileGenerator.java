@@ -98,8 +98,9 @@ public class FileGenerator {
 		content.append("\t// Define variables used directly in Fortran call\n");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
-
-			content.append("\t" + argDesc.getArgCDataType() + " " + "f_" + argDesc.getArgName() + ";\n");
+			if (!argDesc.isOutput() && argDesc.getArgDimension() == 0) {
+				content.append("\t" + argDesc.getArgCDataType() + " " + "f_" + argDesc.getArgName() + ";\n");
+			}
 		}
 
 		// define c variables for return value structure
@@ -163,7 +164,7 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (!argDesc.isOutput()) {
+			if (!argDesc.isOutput() && argDesc.getArgDimension() == 0) {
 				content.append("\tf_" + argDesc.getArgName() + " = " + argDesc.getArgName() + ";\n");
 			}
 		}
@@ -205,7 +206,7 @@ public class FileGenerator {
 			if (argDesc.isOutput() || argDesc.getArgDimension() > 0) {
 				String dataType = argDesc.getArgJavaDataType();
 				content.append("\t(*env)->Release" + Character.toUpperCase(dataType.charAt(0)) + dataType.substring(1)
-						+ "ArrayElements(env, " + argDesc.getArgName() + ", jni_" + argDesc.getArgName() + ",0);\n");
+						+ "ArrayElements(env, " + argDesc.getArgName() + ", f_" + argDesc.getArgName() + ",0);\n");
 			} 
 		}
 
@@ -232,12 +233,12 @@ public class FileGenerator {
 		StringBuffer content = new StringBuffer();
 		content.append("products: " + nameGenerator.getLibraryFileName() + "\n\n");
 
-		content.append(nameGenerator.getLibraryFileName() + ": " + nameGenerator.getFortranObjectFileName() + " "
+		content.append(nameGenerator.getLibraryFileName() + ": " + nameGenerator.getFortranObjectFileName() + " "  + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
 				+ nameGenerator.getCObjectFileName() + " structures.o \n");
 		// FIXME: library files g2c and gfortran need to be inputs, not
 		// constants
 		content.append("\t/usr/bin/gcc --shared -o " + nameGenerator.getLibraryFileName() + " "
-				+ nameGenerator.getCObjectFileName() + " " + nameGenerator.getFortranObjectFileName() + " -lgfortran \n\n");
+				+ nameGenerator.getCObjectFileName() + " " + "ffe_" + nameGenerator.getFortranObjectFileName() + " " + nameGenerator.getFortranObjectFileName() + " -lgfortran \n\n");
 
 		content.append(nameGenerator.getCObjectFileName() + ": " + nameGenerator.getCSourceFileName() + " "
 				+ nameGenerator.getJNIHeaderFileName() + "\n");
@@ -253,6 +254,13 @@ public class FileGenerator {
 		content.append("\tjavac -d . RetVal.java\n");
 		content.append("\tjavac -d . " + nameGenerator.getJavaSourceFileName() + "\n\n");
 
+		content.append("ffe_" + nameGenerator.getFortranObjectFileName() + ": " + "ffe_" + nameGenerator.getFortranSourceFileName()
+				+ " structures.mod \n");
+		content.append("\tgfortran -c -o " + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
+				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " -fPIC \n\n");
+
+
+		
 		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName()
 				+ " structures.mod \n");
 		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " "
@@ -313,9 +321,9 @@ public class FileGenerator {
 		StringBuffer content = new StringBuffer();
 		
 		// subroutine definition
-		content.append("subroutine " + nameGenerator.getFFEFunctionName() +  "(ret_val, ");
+		content.append("\tsubroutine " + nameGenerator.getFFEFunctionName() +  "(ret_val, ");
 		
-		for (ArgumentDescriptor argDesc : functionDescriptor.getFunctionArgs()) {
+		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 			content.append( argDesc.getArgName() + ",");
 		}
 		content.deleteCharAt(content.length() - 1);
@@ -361,6 +369,8 @@ public class FileGenerator {
 
 		content.append("\tTYPE (RETVAL) RET_VAL\n\n");
 
+		content.append("\tINTEGER :: i\n\n");
+		
 		// define all the "generated" variables, including the dimension sizes
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 
@@ -382,7 +392,7 @@ public class FileGenerator {
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 
 			if (argDesc.getArgDimension() > 0) {
-				content.append("\tlocal_" + argDesc.getArgDataType() + ", ALLOCATABLE :: " + argDesc.getArgName());
+				content.append("\t" + argDesc.getArgDataType() + ", ALLOCATABLE :: local_" + argDesc.getArgName());
 
 				content.append("(");
 				for (int i=0; i<argDesc.getArgDimension(); i++) {
@@ -407,7 +417,7 @@ public class FileGenerator {
 					content.append(sizeArgDesc.getArgName() + ",");
 				}
 				content.deleteCharAt(content.length() - 1);
-				content.append(")");
+				content.append("))");
 			}
 			content.append("\n");
 		
