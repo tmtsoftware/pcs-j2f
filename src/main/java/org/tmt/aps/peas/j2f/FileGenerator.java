@@ -40,6 +40,18 @@ public class FileGenerator {
 						+ argDesc.getArgJavaDataType() + "[1];\n");
 			}
 		}
+		
+		// deal with array lengths
+		content.append("\t\t// Deal with Array Lengths\n");
+		for (ArgumentDescriptor argDesc : functionDescriptor.getFunctionArgs()) {
+			
+			if (argDesc.getArgDimension() != 0) {
+				for (int i = 0; i<argDesc.getArgDimension(); i++) {
+					content.append("\t\tint " + argDesc.getArgName() + "_len" + (i+1) + " = " + argDesc.getArgName() + ".length;\n");
+				}
+			}
+		}
+		
 		content.append("\t\t// Call native method\n");
 		content.append("\t\t" + nameGenerator.getJavaNativeMethodName() + "(retVal, ");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
@@ -48,9 +60,13 @@ public class FileGenerator {
 				content.append(argDesc.getArgName() + "_outArray, ");
 			} else {
 				content.append(argDesc.getArgName() + ", ");
+				
+				for (int i = 0; i<argDesc.getArgDimension(); i++) {
+					content.append(argDesc.getArgName() + "_len" + (i+1) + ",");
+				}
 			}
 		}
-		content.deleteCharAt(content.length() - 2);
+		content.deleteCharAt(content.length() - 1);
 		content.append(");\n");
 
 		content.append("\t\t// Assign output variables\n");
@@ -135,9 +151,6 @@ public class FileGenerator {
 
 			} else if (argDesc.getArgDimension() > 0) {
 
-				// get the length of the array: we will need this 
-				content.append("\tjsize f_" + argDesc.getArgName() + "_len = (*env)->GetArrayLength(env, " + argDesc.getArgName() + ");\n");
-
 				// jfloat *jni_array = (*env)->GetFloatArrayElements(env, jarray, 0);
 				content.append("\t" + argDesc.getArgJNIDataType() + " *f_" + argDesc.getArgName() + " = (*env)->Get"
 						+ Character.toUpperCase(dataType.charAt(0)) + dataType.substring(1) + "ArrayElements(env, "
@@ -179,7 +192,9 @@ public class FileGenerator {
 				content.append("&f_" + argDesc.getArgName() + ",");
 			} else {
 				content.append("f_" + argDesc.getArgName() + ",");
-				content.append("&f_" + argDesc.getArgName() + "_len,");
+				for (int i=0; i<argDesc.getArgDimension(); i++) {
+					content.append("&" + argDesc.getArgName() + "_len" + (i+1) + ",");
+				}
 			}
 			
 			
@@ -430,6 +445,7 @@ public class FileGenerator {
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 
 			if (argDesc.getArgDimension() > 0) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
 				
 				// start do loop
 				
@@ -463,6 +479,32 @@ public class FileGenerator {
 		content.deleteCharAt(content.length() - 1);
 		content.append(")\n\n");
 
+		
+		// copy the array from the input arrays to the local arrays
+		// FIXME: just doing one dimension here, fix to be two dimensions
+		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
+
+			if (argDesc.getArgDimension() > 0) {
+			// if (argDesc.getArgDimension() > 0 && argDesc.isOutput()) { // TODO: when input/output is reworked
+				
+				// start do loop
+				
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+
+				content.append("\t\t" + argDesc.getArgName() + "(i) = local_" + argDesc.getArgName() + "(i)\n");
+				
+				content.append("\tenddo\n");
+				
+			}
+			content.append("\n");
+		}
+		content.append("\n");
+		
+
+		
+		
+		
+		
 		// TODO: We need to DEALLOCATE array too
 		
 		content.append("\tEND\n");

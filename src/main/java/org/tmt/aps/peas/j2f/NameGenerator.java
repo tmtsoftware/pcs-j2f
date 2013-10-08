@@ -76,7 +76,7 @@ public class NameGenerator {
 
 		StringBuffer buf = new StringBuffer("RetVal retVal, ");
 		
-		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
+		for (Iterator<ArgumentDescriptor> it = fd.getGeneratedFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			
 			if (argDesc.isOutput()) {				
@@ -123,10 +123,18 @@ public class NameGenerator {
 
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
-			
-			if (argDesc.isOutput() || argDesc.getArgDimension() > 0) {				
+
+			if (argDesc.isOutput()) {				
 				// TODO: generalize the output
 				buf.append(argDesc.getArgJNIDataType() + "Array " + argDesc.getArgName() + ", "); 
+
+			} else if (argDesc.getArgDimension() > 0) {				
+
+				buf.append(argDesc.getArgJNIDataType() + "Array " + argDesc.getArgName() + ", "); 
+				for (int i=0; i<argDesc.getArgDimension(); i++) {
+					buf.append("jint " +  argDesc.getArgName() + "_len" + (i+1) + ", ");
+				}
+				
 			} else {
 				buf.append(argDesc.getArgJNIDataType() + " " + argDesc.getArgName() + ", "); 				
 			}
@@ -153,7 +161,7 @@ public class NameGenerator {
 	}
 
 	public String getFFEFunctionName() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub	
 		return "ffe_" + functionName;
 	}
 	
