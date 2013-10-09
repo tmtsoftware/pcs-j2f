@@ -50,7 +50,28 @@ public class FileGenerator {
 					content.append("\t\tint " + argDesc.getArgName() + "_len" + (i+1) + " = " + argDesc.getArgName() + ".length;\n");
 				}
 			}
+			if (argDesc.getArgDimension() == 2) {
+				content.append("\t\t" + argDesc.getArgJavaDataType() + "[] " + argDesc.getArgName() + "_collapse = new " + argDesc.getArgJavaDataType() + "[");
+				content.append(argDesc.getArgName() + "_len1 * " + argDesc.getArgName() + "_len2");
+				content.append("];\n");
+			}
 		}
+		
+		// collapse 2-d to 1-d
+		for (ArgumentDescriptor argDesc : functionDescriptor.getFunctionArgs()) {
+			
+			if (argDesc.getArgDimension() == 2) {
+				
+				content.append("\t\t// collapse array to one dimension\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\t\t" + argDesc.getArgName() + "_collapse[i*" + argDesc.getArgName() + "_len2 + j] = " + argDesc.getArgName() + "[i][j]; \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+		}
+		
+		
 		
 		content.append("\t\t// Call native method\n");
 		content.append("\t\t" + nameGenerator.getJavaNativeMethodName() + "(retVal, ");
@@ -59,8 +80,12 @@ public class FileGenerator {
 			if (argDesc.isOutput()) {
 				content.append(argDesc.getArgName() + "_outArray, ");
 			} else {
-				content.append(argDesc.getArgName() + ", ");
 				
+				if (argDesc.getArgDimension() == 2) {
+					content.append(argDesc.getArgName() + "_collapse, ");
+				} else {
+					content.append(argDesc.getArgName() + ", ");
+				}
 				for (int i = 0; i<argDesc.getArgDimension(); i++) {
 					content.append(argDesc.getArgName() + "_len" + (i+1) + ",");
 				}
@@ -69,6 +94,21 @@ public class FileGenerator {
 		content.deleteCharAt(content.length() - 1);
 		content.append(");\n");
 
+		// expand 1-d to 2-d
+		for (ArgumentDescriptor argDesc : functionDescriptor.getFunctionArgs()) {
+			
+			if (argDesc.getArgDimension() == 2) {
+				
+				content.append("\t\t// expand array to two dimensions\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\t\t" + argDesc.getArgName() + "[i][j] = " + argDesc.getArgName() + "_collapse[i*" + argDesc.getArgName() + "_len2 + j];\n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+		}
+		
+		
 		content.append("\t\t// Assign output variables\n");
 		content.append("\t\tObject[] out = new Object[" + outputCount + "];\n");
 		int outIndex = 0;
@@ -272,14 +312,14 @@ public class FileGenerator {
 		content.append("ffe_" + nameGenerator.getFortranObjectFileName() + ": " + "ffe_" + nameGenerator.getFortranSourceFileName()
 				+ " structures.mod \n");
 		content.append("\tgfortran -c -o " + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
-				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " -fPIC \n\n");
+				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
 
 
 		
 		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName()
 				+ " structures.mod \n");
 		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC \n\n");
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
 
 		content.append("structures.mod: structures.f90 \n");
 		content.append("\tgfortran -c structures.f90 \n\n");
@@ -339,9 +379,9 @@ public class FileGenerator {
 		content.append("\tsubroutine " + nameGenerator.getFFEFunctionName() +  "(ret_val, ");
 		
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
-			content.append( argDesc.getArgName() + ",");
+			content.append("\t" + argDesc.getArgName() + ", &\n");
 		}
-		content.deleteCharAt(content.length() - 1);
+		content.delete(content.length() - 4, content.length());
 		
 		content.append(")\n\n");
 		
@@ -385,6 +425,7 @@ public class FileGenerator {
 		content.append("\tTYPE (RETVAL) RET_VAL\n\n");
 
 		content.append("\tINTEGER :: i\n\n");
+		content.append("\tINTEGER :: j\n\n");
 		
 		// define all the "generated" variables, including the dimension sizes
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
@@ -394,7 +435,7 @@ public class FileGenerator {
 			if (argDesc.getArgDimension() > 0) {
 				content.append("(");
 				for (ArgumentDescriptor sizeArgDesc : argDesc.getChildArgs()) {
-					content.append(sizeArgDesc.getArgName() + ",");
+					content.append(sizeArgDesc.getArgName() + "*");
 				}
 				content.deleteCharAt(content.length() - 1);
 				content.append(")");
@@ -444,7 +485,7 @@ public class FileGenerator {
 		// FIXME: just doing one dimension here, fix to be two dimensions
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 
-			if (argDesc.getArgDimension() > 0) {
+			if (argDesc.getArgDimension() == 1) {
 			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
 				
 				// start do loop
@@ -456,6 +497,21 @@ public class FileGenerator {
 				content.append("\tenddo\n");
 				
 			}
+			
+			if (argDesc.getArgDimension() == 2) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+
+				content.append("\t\t\tlocal_" + argDesc.getArgName() + "(i,j) = " + argDesc.getArgName() + "((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " + j)\n");
+				
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+			
+			
 			content.append("\n");
 		}
 		content.append("\n");
@@ -484,7 +540,7 @@ public class FileGenerator {
 		// FIXME: just doing one dimension here, fix to be two dimensions
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
 
-			if (argDesc.getArgDimension() > 0) {
+			if (argDesc.getArgDimension() == 1) {
 			// if (argDesc.getArgDimension() > 0 && argDesc.isOutput()) { // TODO: when input/output is reworked
 				
 				// start do loop
@@ -496,6 +552,21 @@ public class FileGenerator {
 				content.append("\tenddo\n");
 				
 			}
+			if (argDesc.getArgDimension() == 2) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+
+				content.append("\t\t\t" + argDesc.getArgName() + "((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " + j) = local_" + argDesc.getArgName() + "(i,j)\n");
+				
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+			
+			
+			
 			content.append("\n");
 		}
 		content.append("\n");

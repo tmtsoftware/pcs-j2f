@@ -83,7 +83,7 @@ public class NameGenerator {
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + "[], "); 
 			} else {
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName());
-				for (int i=0; i<argDesc.getArgDimension(); i++) {
+				if (argDesc.getArgDimension() > 0) {
 					buf.append("[]");
 				}
 				buf.append(", "); 				
