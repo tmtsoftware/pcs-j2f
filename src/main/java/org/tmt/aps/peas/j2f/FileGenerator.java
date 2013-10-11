@@ -34,7 +34,7 @@ public class FileGenerator {
 		content.append("\t\t// Output variable definitions\n");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				outputCount++;
 				content.append("\t\t" + argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + "_outArray[] = new "
 						+ argDesc.getArgJavaDataType() + "[1];\n");
@@ -79,7 +79,7 @@ public class FileGenerator {
 		content.append("\t\t" + nameGenerator.getJavaNativeMethodName() + "(retVal, ");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				content.append(argDesc.getArgName() + "_outArray, ");
 			} else {
 				
@@ -116,7 +116,7 @@ public class FileGenerator {
 		int outIndex = 0;
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				content.append("\t\t" + "out[" + outIndex++ + "] = " + argDesc.getArgName() + "_outArray[0];\n");
 			}
 		}
@@ -156,7 +156,7 @@ public class FileGenerator {
 		content.append("\t// Define variables used directly in Fortran call\n");
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
-			if (!argDesc.isOutput() && argDesc.getArgDimension() == 0) {
+			if (argDesc.isScalar()) { 
 				content.append("\t" + argDesc.getArgCDataType() + " " + "f_" + argDesc.getArgName() + ";\n");
 			}
 		}
@@ -175,7 +175,7 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				content.append("\t" + argDesc.getArgJNIDataType() + " " + "*jni_" + argDesc.getArgName() + ";\n");
 			}
 
@@ -187,7 +187,7 @@ public class FileGenerator {
 
 			String dataType = argDesc.getArgJavaDataType();
 
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				content.append("\tjni_" + argDesc.getArgName() + " = (*env)->Get" + Character.toUpperCase(dataType.charAt(0))
 						+ dataType.substring(1) + "ArrayElements(env, " + argDesc.getArgName() + ", NULL);\n");
 
@@ -219,7 +219,7 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (!argDesc.isOutput() && argDesc.getArgDimension() == 0) {
+			if (argDesc.isScalarInput()) {
 				content.append("\tf_" + argDesc.getArgName() + " = " + argDesc.getArgName() + ";\n");
 			}
 		}
@@ -250,7 +250,7 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (argDesc.isOutput()) {
+			if (argDesc.isScalarOutput()) {
 				content.append("\tjni_" + argDesc.getArgName() + "[0] = f_" + argDesc.getArgName() + ";\n");
 			}
 		}
@@ -260,10 +260,10 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (argDesc.isOutput() || argDesc.getArgDimension() > 0) {
+			if (argDesc.isScalarOutput()) {
 				String dataType = argDesc.getArgJavaDataType();
 				content.append("\t(*env)->Release" + Character.toUpperCase(dataType.charAt(0)) + dataType.substring(1)
-						+ "ArrayElements(env, " + argDesc.getArgName() + ", f_" + argDesc.getArgName() + ",0);\n");
+						+ "ArrayElements(env, " + argDesc.getArgName() + ", jni_" + argDesc.getArgName() + ",0);\n");
 			} 
 		}
 

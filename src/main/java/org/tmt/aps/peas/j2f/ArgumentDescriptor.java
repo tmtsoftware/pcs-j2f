@@ -71,6 +71,15 @@ public class ArgumentDescriptor {
 	public boolean isOutput() {
 		return (argInOut.toUpperCase().equals("OUT"));
 	}
+	public boolean isScalar() {
+		return (argDimension == 0);
+	}
+	public boolean isScalarOutput() {
+		return (argInOut.toUpperCase().equals("OUT") && argDimension == 0);
+	}
+	public boolean isScalarInput() {
+		return (argInOut.toUpperCase().equals("IN") && argDimension == 0);
+	}
 	public boolean isInput() {
 		return (argInOut.toUpperCase().equals("IN"));
 	}

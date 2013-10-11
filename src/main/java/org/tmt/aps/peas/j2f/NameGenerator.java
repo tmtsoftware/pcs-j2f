@@ -79,7 +79,7 @@ public class NameGenerator {
 		for (Iterator<ArgumentDescriptor> it = fd.getGeneratedFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			
-			if (argDesc.isOutput()) {				
+			if (argDesc.isScalarOutput()) {				
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName() + "[], "); 
 			} else {
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName());
@@ -102,7 +102,7 @@ public class NameGenerator {
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 			
-			if (!argDesc.isOutput()) {				
+			if (!argDesc.isScalarOutput()) {				
 				buf.append(argDesc.getArgJavaDataType() + " " + argDesc.getArgName());
 				for (int i=0; i<argDesc.getArgDimension(); i++) {
 					buf.append("[]");
@@ -124,7 +124,7 @@ public class NameGenerator {
 		for (Iterator<ArgumentDescriptor> it = fd.getFunctionArgs().iterator(); it.hasNext(); ) {
 			ArgumentDescriptor argDesc = it.next();
 
-			if (argDesc.isOutput()) {				
+			if (argDesc.isScalarOutput()) {				
 				// TODO: generalize the output
 				buf.append(argDesc.getArgJNIDataType() + "Array " + argDesc.getArgName() + ", "); 
 
