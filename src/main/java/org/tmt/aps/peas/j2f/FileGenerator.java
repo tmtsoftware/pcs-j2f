@@ -46,8 +46,10 @@ public class FileGenerator {
 		for (ArgumentDescriptor argDesc : functionDescriptor.getFunctionArgs()) {
 			
 			if (argDesc.getArgDimension() != 0) {
+				StringBuffer elemZero = new StringBuffer();
 				for (int i = 0; i<argDesc.getArgDimension(); i++) {
-					content.append("\t\tint " + argDesc.getArgName() + "_len" + (i+1) + " = " + argDesc.getArgName() + ".length;\n");
+					content.append("\t\tint " + argDesc.getArgName() + "_len" + (i+1) + " = " + argDesc.getArgName() + elemZero + ".length;\n");
+					elemZero.append("[0]"); // for next dimension
 				}
 			}
 			if (argDesc.getArgDimension() == 2) {
