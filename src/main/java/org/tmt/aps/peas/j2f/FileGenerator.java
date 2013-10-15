@@ -265,6 +265,12 @@ public class FileGenerator {
 				content.append("\t(*env)->Release" + Character.toUpperCase(dataType.charAt(0)) + dataType.substring(1)
 						+ "ArrayElements(env, " + argDesc.getArgName() + ", jni_" + argDesc.getArgName() + ",0);\n");
 			} 
+			
+			if (argDesc.isNonScalarOutput()) {
+				String dataType = argDesc.getArgJavaDataType();
+				content.append("\t(*env)->Release" + Character.toUpperCase(dataType.charAt(0)) + dataType.substring(1)
+						+ "ArrayElements(env, " + argDesc.getArgName() + ", f_" + argDesc.getArgName() + ",0);\n");
+			} 
 		}
 
 		content.append("// put return code into Java\n\n");

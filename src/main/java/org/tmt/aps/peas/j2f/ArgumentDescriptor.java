@@ -98,4 +98,8 @@ public class ArgumentDescriptor {
 	public void setChildArgs(List<ArgumentDescriptor> childArgs) {
 		this.childArgs = childArgs;
 	}
+	public boolean isNonScalarOutput() {
+		// TODO Auto-generated method stub
+		return (argInOut.toUpperCase().equals("OUT") && argDimension != 0);
+	}
 }
