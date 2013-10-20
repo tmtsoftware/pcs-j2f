@@ -1,6 +1,7 @@
 package org.tmt.aps.peas.j2f;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class J2FParser {
 
 	// parses an input fortran file and returns a function descriptor structure
 
-	public FunctionDescriptor parse(String inputFileName) {
+	public FunctionDescriptor parse(File inputFile) {
 
 		try {
 			// open input file and read xml block into buf
 			BufferedReader in = new BufferedReader(
-					new FileReader(inputFileName));
+					new FileReader(inputFile.getAbsolutePath()));
 			String line;
 			StringBuffer buf = new StringBuffer("<?xml version=\"1.0\" encoding=\"us-ascii\"?>");
 			boolean inBlock = false;

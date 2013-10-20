@@ -165,5 +165,9 @@ public class NameGenerator {
 		return "ffe_" + functionName;
 	}
 	
-	
+	public String getFFEObjectFileName() {
+		String filePrefix = getFFESourceFileName().substring(0, getFFESourceFileName().indexOf("."));
+		return filePrefix + ".o";
+	}
+
 }

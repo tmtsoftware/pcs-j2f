@@ -3,7 +3,9 @@ package org.tmt.aps.peas.j2f;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class FileGenerator {
 
@@ -23,7 +25,7 @@ public class FileGenerator {
 		content.append("{\n");
 		content.append("\tpublic native void " + nameGenerator.getJavaNativeMethodName() + "(");
 		content.append(nameGenerator.getNativeMethodSignature() + ");\n");
-		content.append("\tstatic { System.loadLibrary(\"" + nameGenerator.getLibraryName() + "\"); }\n");
+		content.append("\tstatic { System.loadLibrary(\"" + "peas" + "\"); }\n");
 		content.append("\t// TODO: We need to write the public method that calls the private and unpacks output arrays\n");
 		content.append("\n");
 		content.append("\tpublic Object[] " + nameGenerator.getJavaMethodName() + "(");
@@ -80,13 +82,13 @@ public class FileGenerator {
 		for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
 			ArgumentDescriptor argDesc = it.next();
 			if (argDesc.isScalarOutput()) {
-				content.append(argDesc.getArgName() + "_outArray, ");
+				content.append(argDesc.getArgName() + "_outArray,");
 			} else {
 				
 				if (argDesc.getArgDimension() == 2) {
-					content.append(argDesc.getArgName() + "_collapse, ");
+					content.append(argDesc.getArgName() + "_collapse,");
 				} else {
-					content.append(argDesc.getArgName() + ", ");
+					content.append(argDesc.getArgName() + ",");
 				}
 				for (int i = 0; i<argDesc.getArgDimension(); i++) {
 					content.append(argDesc.getArgName() + "_len" + (i+1) + ",");
@@ -290,18 +292,10 @@ public class FileGenerator {
 
 	}
 
-	public void generateMakefile(File stagingDirectory) throws Exception {
+	public String generateMakefileSegment(File stagingDirectory) throws Exception {
 
 		// Generate input string
 		StringBuffer content = new StringBuffer();
-		content.append("products: " + nameGenerator.getLibraryFileName() + "\n\n");
-
-		content.append(nameGenerator.getLibraryFileName() + ": " + nameGenerator.getFortranObjectFileName() + " "  + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getCObjectFileName() + " structures.o \n");
-		// FIXME: library files g2c and gfortran need to be inputs, not
-		// constants
-		content.append("\t/usr/bin/gcc --shared -o " + nameGenerator.getLibraryFileName() + " "
-				+ nameGenerator.getCObjectFileName() + " " + "ffe_" + nameGenerator.getFortranObjectFileName() + " " + nameGenerator.getFortranObjectFileName() + " -lgfortran \n\n");
 
 		content.append(nameGenerator.getCObjectFileName() + ": " + nameGenerator.getCSourceFileName() + " "
 				+ nameGenerator.getJNIHeaderFileName() + "\n");
@@ -329,48 +323,52 @@ public class FileGenerator {
 		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " "
 				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
 
-		content.append("structures.mod: structures.f90 \n");
-		content.append("\tgfortran -c structures.f90 \n\n");
 
-		content.append("clean:\n");
-		content.append("\trm *.so *.class *.h *.o\n");
-
-		// create and write to file
-		createAndWriteFile(stagingDirectory, "makefile", content.toString());
+		return content.toString();
 
 	}
 
-	public void generateScript(File stagingDirectory, String fortranFileName, String currentDir) throws Exception {
+	public List<String> generateObjectFileList() {
+		
+		List<String> list = new ArrayList<String>();
+		list.add(nameGenerator.getCObjectFileName());
+		list.add(nameGenerator.getFortranObjectFileName());
+		list.add(nameGenerator.getFFEObjectFileName());
+		
+		return list;
+	}
+
+
+	public String generateScriptSegment(File stagingDirectory, String fortranFileName, String currentDir, File fortranDir) throws Exception {
 
 		StringBuffer content = new StringBuffer();
-		content.append("#!/bin/sh\n");
-
-		content.append("chmod a+x " + stagingDirectory + File.separator + "*\n");
 
 		// execute makefile
 		// copy fortran source file to staging directory
-		content.append("cp " + currentDir + "/" + fortranFileName + " " + stagingDirectory.getAbsolutePath() + "\n");
+		content.append("cp " + fortranDir.getAbsolutePath() + "/" + fortranFileName + " " + stagingDirectory.getAbsolutePath() + "\n");
 		content.append("cp " + currentDir + "/" + "structures.f90" + " " + stagingDirectory.getAbsolutePath() + "\n");
 		content.append("cp " + currentDir + "/" + "RetVal.java" + " " + stagingDirectory.getAbsolutePath() + "\n");
-		content.append("cd " + stagingDirectory.getAbsolutePath() + "\n");
-		content.append("make" + "\n");
 
-		// TODO: we might want to consider putting everything in a jar.
-
-		// copy Java and library file to current directory
-		content.append("cp " + "*.java" + " " + currentDir + "\n");
-		content.append("cp " + nameGenerator.getLibraryFileName() + " " + "/opt/apps/lib" + "\n");
-
-		// create and write to file
-		createAndWriteFile(stagingDirectory, "script.sh", content.toString());
+		return content.toString();
 	}
 
-	private void createAndWriteFile(File dir, String filename, String content) throws Exception {
+	public static void createAndWriteFile(File dir, String filename, String content) throws Exception {
 
 		File file = new File(dir.getAbsolutePath() + File.separator + filename);
-		file.createNewFile();
+		boolean appendFlg = true;
+		if (!file.exists()) {
+			file.createNewFile();
+			appendFlg = false;
+		}
+		BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsolutePath(), appendFlg));
+		out.write(content);
+		out.close();
+	}
 
-		BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsolutePath()));
+	public static void prependToFile(File dir, String filename, String content) throws Exception {
+
+		File file = new File(dir.getAbsolutePath() + File.separator + filename);
+		BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsolutePath(), true));
 		out.write(content);
 		out.close();
 	}
@@ -426,7 +424,7 @@ public class FileGenerator {
 		
 		}
 		
-		content.append("\t\tEND SUBROUTINE array\n");
+		content.append("\t\tEND SUBROUTINE " + functionDescriptor.getFunctionName() + "\n");
 		content.append("\tEND INTERFACE\n\n");
       
 
