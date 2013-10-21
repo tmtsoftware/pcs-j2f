@@ -151,7 +151,7 @@ public class NameGenerator {
 		//if (getFFEFunctionName().indexOf("_") >= 0) {
 		//	return getFFEFunctionName() + "__";
 		//} else {		
-			return getFFEFunctionName() + "_";
+			return getFFEFunctionName().toLowerCase() + "_";
 		//}
 	}
 
