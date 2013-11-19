@@ -392,8 +392,10 @@ public class FileGenerator {
 		content.append(")\n\n");
 		
 		content.append("\tUSE Structures\n");
+		content.append("\tUSE mod_" + functionDescriptor.getFunctionName() + "\n");
 		content.append("\tIMPLICIT NONE\n\n");
 
+		/*
 		// interface declaration
 		content.append("\tINTERFACE\n");
 		content.append("\t\tSUBROUTINE " + functionDescriptor.getFunctionName() + "(ret_val, ");
@@ -427,6 +429,7 @@ public class FileGenerator {
 		content.append("\t\tEND SUBROUTINE " + functionDescriptor.getFunctionName() + "\n");
 		content.append("\tEND INTERFACE\n\n");
       
+      	*/
 
 		content.append("\tTYPE (RETVAL) RET_VAL\n\n");
 
