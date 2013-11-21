@@ -89,6 +89,11 @@ public class J2FCodeGenerator {
 		// Parse the file
 		J2FParser parser = new J2FParser();
 		FunctionDescriptor fortranFunctionDescriptor = parser.parse(fortranFile);
+		
+		if (fortranFunctionDescriptor == null) {
+			// found a file that does require processing, skip it.
+			return;
+		}
 
 		String fortranFileName = fortranFile.getName();
 

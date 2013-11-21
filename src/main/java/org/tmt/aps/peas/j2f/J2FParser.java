@@ -43,6 +43,10 @@ public class J2FParser {
 				}
 			}
 			in.close();
+			
+			if (buf.length() < 50) {
+				return  null;
+			}
 
 			// TODO: parse out function and args, constructing the
 			// FunctionDescriptor
