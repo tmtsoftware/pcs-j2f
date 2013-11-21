@@ -13,11 +13,11 @@ fi
 rm -rf /tmp/tempDir*
 
 if [[ $1 = "-e" ]]; then
-   rm /opt/apps/j2f/J*.java
+   rm $2/J*.java
    cp ~/workspace/pcs-web/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java $2
    cp ~/workspace/peas-pcs-fortran/src/structures.f90 $2
    java -classpath ~/workspace/pcs-j2f/target/j2f-0.0.1-SNAPSHOT.jar org.tmt.aps.peas.j2f.J2FCodeGenerator ~/workspace/peas-pcs-fortran/src/ $2 
-   cp /opt/apps/j2f/J*.java ~/workspace/pcs-web/src/main/java/org/tmt/aps/peas/lang/interop/
+   cp $2/J*.java ~/workspace/pcs-web/src/main/java/org/tmt/aps/peas/lang/interop/
 else
    java -classpath j2f-0.0.1-SNAPSHOT.jar org.tmt.aps.peas.j2f.J2FCodeGenerator $1 $2
 fi
