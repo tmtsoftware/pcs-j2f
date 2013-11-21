@@ -22,11 +22,13 @@ public class J2FCodeGenerator {
 		// Java class and a library
 
 		String fortranPath = args[0];
+		String workingPath = args[1];
 		String javaPackage = null;
-		if (args.length > 1) {
-			javaPackage = args[1];
+		if (args.length > 2) {
+			javaPackage = args[2];
 		}
-		String currentDir = new File(".").getAbsolutePath();
+		
+		String currentDir = new File(workingPath).getAbsolutePath();
 
 		J2FCodeGenerator codeGenerator = new J2FCodeGenerator();
 
