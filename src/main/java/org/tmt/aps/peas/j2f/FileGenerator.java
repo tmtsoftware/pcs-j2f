@@ -313,7 +313,7 @@ public class FileGenerator {
 
 		content.append("ffe_" + nameGenerator.getFortranObjectFileName() + ": " + "ffe_" + nameGenerator.getFortranSourceFileName()
 				+ " structures.mod \n");
-		content.append("\tgfortran -c -o " + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
+		content.append("\tgfortran  -ffree-line-length-none -c -o " + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
 				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
 
 
