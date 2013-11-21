@@ -41,10 +41,13 @@ public class J2FCodeGenerator {
 		try {
 			File stagingDirectory = createTempDir();
 			System.out.println("currentDir = " + currentDir);
+			System.out.println("stagingDirectory = " + stagingDirectory);
+			System.out.println("fortranDir = " + fortranDir);
 
 			
 			for (File fortranFile : fortranDir.listFiles()) {
 			
+				System.out.println("fortranFile = " + fortranFile);
 				generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
 
 			}
@@ -148,7 +151,7 @@ public class J2FCodeGenerator {
 			heading.append(objectFileName + " \\\n");
 		}
 		heading.deleteCharAt(heading.length()-2);
-		heading.append("\t/usr/bin/gcc --shared -o libpeas.so ");
+		heading.append("\tgcc --shared -o libpeas.so ");
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}		
