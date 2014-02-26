@@ -21,10 +21,10 @@ public class J2FParser {
 	// parses an input fortran file and returns a function descriptor structure
 
 	public FunctionDescriptor parse(File inputFile) {
-
+		BufferedReader in = null;
 		try {
 			// open input file and read xml block into buf
-			BufferedReader in = new BufferedReader(
+			in = new BufferedReader(
 					new FileReader(inputFile.getAbsolutePath()));
 			String line;
 			StringBuffer buf = new StringBuffer("<?xml version=\"1.0\" encoding=\"us-ascii\"?>");
@@ -42,10 +42,9 @@ public class J2FParser {
 					break;
 				}
 			}
-			in.close();
 			
 			if (buf.length() < 50) {
-				return  null;
+				throw new Exception("");
 			}
 
 			// TODO: parse out function and args, constructing the
@@ -54,11 +53,31 @@ public class J2FParser {
 			Document doc = createDocument(buf.toString());
 			
 			FunctionDescriptor fd = createFunctionDescriptor(doc);
+
+			// find the USE statements in the actual code
+			List<String> usesList = new ArrayList<String>();
+			while ((line = in.readLine()) != null) {
+
+				if (line.trim().startsWith("USE") || line.trim().startsWith("use")) {
+					if (line.indexOf("MOD_") > 0) {
+						String uses = line.trim().substring(line.indexOf("MOD_")+4);
+						usesList.add(uses);
+					}
+				}
+			}
+			
+			fd.setUsesList(usesList);
 			
 			return fd;
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			try {
+			in.close();
+			} catch (Exception e1) {
+				
+			}
 		}
 
 		return null;

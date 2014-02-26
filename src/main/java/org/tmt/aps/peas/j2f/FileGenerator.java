@@ -319,7 +319,11 @@ public class FileGenerator {
 
 		
 		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName()
-				+ " structures.mod \n");
+				+ " structures.mod ");
+		for (String uses : functionDescriptor.getUsesList()) {
+			content.append(" " + uses + ".o ");
+		}
+		content.append("\n");
 		content.append("\tgfortran -c -o " + nameGenerator.getFortranObjectFileName() + " "
 				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
 

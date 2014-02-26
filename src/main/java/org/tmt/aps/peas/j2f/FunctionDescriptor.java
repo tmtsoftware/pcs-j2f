@@ -10,6 +10,7 @@ public class FunctionDescriptor {
 	String functionLongDesc;
 	List<ArgumentDescriptor> functionArgs;
 	List<ArgumentDescriptor> generatedFunctionArgs; // additional args and order for array sizing
+	List<String> usesList;
 	
 	public String getFunctionName() {
 		return functionName;
@@ -46,6 +47,12 @@ public class FunctionDescriptor {
 	}
 	public void setGeneratedFunctionArgs(List<ArgumentDescriptor> generatedFunctionArgs) {
 		this.generatedFunctionArgs = generatedFunctionArgs;
+	}
+	public List<String> getUsesList() {
+		return usesList;
+	}
+	public void setUsesList(List<String> usesList) {
+		this.usesList = usesList;
 	} 
 	
 	
