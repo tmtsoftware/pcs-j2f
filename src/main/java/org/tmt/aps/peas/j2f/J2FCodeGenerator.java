@@ -49,9 +49,10 @@ public class J2FCodeGenerator {
 			
 			for (File fortranFile : fortranDir.listFiles()) {
 			
-				System.out.println("fortranFile = " + fortranFile);
-				generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
-
+				if (!fortranFile.isDirectory()) {
+					System.out.println("fortranFile = " + fortranFile);
+						generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
+				}
 			}
 			
 			String makeHeading = generateMakefileHeading();
