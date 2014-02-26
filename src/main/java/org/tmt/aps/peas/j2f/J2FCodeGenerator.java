@@ -175,6 +175,9 @@ public class J2FCodeGenerator {
 		footer.append("structures.mod: structures.f90 \n");
 		footer.append("\tgfortran -c structures.f90 \n\n");
 
+		footer.append("mod_logWrite.mod: logWrite.f90 \n");
+		footer.append("\tgfortran -c logWrite.f90 \n\n");
+
 		footer.append("clean:\n");
 		footer.append("\trm *.so *.class *.h *.o\n");
 

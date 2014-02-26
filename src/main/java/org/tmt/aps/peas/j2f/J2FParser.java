@@ -60,7 +60,7 @@ public class J2FParser {
 
 				if (line.trim().startsWith("USE") || line.trim().startsWith("use")) {
 					if (line.indexOf("MOD_") > 0) {
-						String uses = line.trim().substring(line.indexOf("MOD_")+4);
+						String uses = line.trim().substring(line.trim().indexOf("MOD_")+4);
 						usesList.add(uses);
 					}
 				}

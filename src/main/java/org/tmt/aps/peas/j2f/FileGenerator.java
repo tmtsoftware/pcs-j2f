@@ -319,7 +319,7 @@ public class FileGenerator {
 
 		
 		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName()
-				+ " structures.mod ");
+				+ " structures.mod mod_logWrite.mod");
 		for (String uses : functionDescriptor.getUsesList()) {
 			content.append(" " + uses + ".o ");
 		}
@@ -351,6 +351,7 @@ public class FileGenerator {
 		// copy fortran source file to staging directory
 		content.append("cp " + fortranDir.getAbsolutePath() + "/" + fortranFileName + " " + stagingDirectory.getAbsolutePath() + "\n");
 		content.append("cp " + currentDir + "/" + "structures.f90" + " " + stagingDirectory.getAbsolutePath() + "\n");
+		content.append("cp " + currentDir + "/" + "logWrite.f90" + " " + stagingDirectory.getAbsolutePath() + "\n");
 		content.append("cp " + currentDir + "/" + "RetVal.java" + " " + stagingDirectory.getAbsolutePath() + "\n");
 
 		return content.toString();
