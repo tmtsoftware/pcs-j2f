@@ -164,6 +164,7 @@ public class J2FCodeGenerator {
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}		
+		heading.append("logWrite.o" + " \\\n");
 		heading.append(" -lgfortran \n\n");
 
 		return heading.toString();
