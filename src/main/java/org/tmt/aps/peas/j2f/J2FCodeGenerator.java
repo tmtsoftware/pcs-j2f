@@ -158,6 +158,7 @@ public class J2FCodeGenerator {
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}
+		heading.append("logWrite.o" + " \\\n");
 		heading.deleteCharAt(heading.length()-2);
 		heading.append("\tgcc --shared -o libpeas.so ");
 		for (String objectFileName : objectFileNameList) {
