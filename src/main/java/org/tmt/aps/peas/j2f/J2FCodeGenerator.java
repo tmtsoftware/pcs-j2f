@@ -1,16 +1,21 @@
 package org.tmt.aps.peas.j2f;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 
 public class J2FCodeGenerator {
 
 	static List<String> objectFileNameList = new ArrayList<String>();
 	static StringBuffer makeBuffer = new StringBuffer();
 	static StringBuffer scriptBuffer = new StringBuffer();
-	
+
 	public static void main(String args[]) {
 
 		// TODO: handle "usage:"
@@ -27,15 +32,15 @@ public class J2FCodeGenerator {
 		if (args.length > 2) {
 			javaPackage = args[2];
 		}
-		
+
 		String currentDir = new File(workingPath).getAbsolutePath();
 
 		J2FCodeGenerator codeGenerator = new J2FCodeGenerator();
 
 		File fortranDir = new File(fortranPath);
-		
+
 		codeGenerator.generate(fortranDir, javaPackage, currentDir);
-	
+
 	}
 
 	public String generate(File fortranDir, String javaPackage, String currentDir) {
@@ -46,34 +51,31 @@ public class J2FCodeGenerator {
 			System.out.println("stagingDirectory = " + stagingDirectory);
 			System.out.println("fortranDir = " + fortranDir);
 
-			
 			for (File fortranFile : fortranDir.listFiles()) {
-			
+
 				if (!fortranFile.isDirectory()) {
 					System.out.println("fortranFile = " + fortranFile);
-						generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
+					generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
 				}
 			}
-			
+
 			String makeHeading = generateMakefileHeading();
 			String makeFooter = generateMakefileFooter();
 
 			makeBuffer.insert(0, makeHeading);
 			makeBuffer.append(makeFooter);
-			
+
 			FileGenerator.createAndWriteFile(stagingDirectory, "makefile", makeBuffer.toString());
-			
 
 			String scriptHeading = generateScriptHeading(stagingDirectory, currentDir);
 			String scriptFooter = generateScriptFooter(stagingDirectory, currentDir);
-			
+
 			scriptBuffer.insert(0, scriptHeading);
 			scriptBuffer.append(scriptFooter);
 
 			// create and write to file
 			FileGenerator.createAndWriteFile(stagingDirectory, "script.sh", scriptBuffer.toString());
 
-			
 			executeShellCommand("chmod a+x " + stagingDirectory + File.separator + "*");
 
 			// execute makefile
@@ -90,7 +92,7 @@ public class J2FCodeGenerator {
 		// Parse the file
 		J2FParser parser = new J2FParser();
 		FunctionDescriptor fortranFunctionDescriptor = parser.parse(fortranFile);
-		
+
 		if (fortranFunctionDescriptor == null) {
 			// found a file that does require processing, skip it.
 			return;
@@ -107,16 +109,34 @@ public class J2FCodeGenerator {
 		fileGenerator.generateJavaSourceFile(stagingDirectory);
 		fileGenerator.generateCSourceFile(stagingDirectory);
 		fileGenerator.generateFFESourceFile(stagingDirectory);
-		
+
 		String makefileSegment = fileGenerator.generateMakefileSegment(stagingDirectory);
 		makeBuffer.append(makefileSegment);
-		
+
 		String scriptSegment = fileGenerator.generateScriptSegment(stagingDirectory, fortranFileName, currentDir, fortranDir);
 		scriptBuffer.append(scriptSegment);
 
 		List<String> objFiles = fileGenerator.generateObjectFileList();
 		objectFileNameList.addAll(objFiles);
 
+	}
+
+	private static void executeShellCommand1(String command) {
+		ProcessBuilder builder = new ProcessBuilder(command);
+
+		try {
+			final Process process = builder.start();
+			InputStream is = process.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line;
+			while ((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+			System.out.println("Program terminated!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void executeShellCommand(String command) {
@@ -146,8 +166,7 @@ public class J2FCodeGenerator {
 
 		return tempDir;
 	}
-	
-	
+
 	public String generateMakefileHeading() throws Exception {
 
 		// Generate input string
@@ -159,17 +178,17 @@ public class J2FCodeGenerator {
 			heading.append(objectFileName + " \\\n");
 		}
 		heading.append("logWrite.o" + " \\\n");
-		heading.deleteCharAt(heading.length()-2);
+		heading.deleteCharAt(heading.length() - 2);
 		heading.append("\tgcc --shared -o libpeas.so ");
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
-		}		
+		}
 		heading.append("logWrite.o" + " \\\n");
 		heading.append(" -lgfortran -llapack \n\n");
 
 		return heading.toString();
 	}
-	
+
 	public String generateMakefileFooter() throws Exception {
 
 		StringBuffer footer = new StringBuffer();
@@ -187,7 +206,7 @@ public class J2FCodeGenerator {
 		return footer.toString();
 
 	}
-	
+
 	public String generateScriptHeading(File stagingDirectory, String currentDir) throws Exception {
 
 		StringBuffer content = new StringBuffer();
@@ -196,8 +215,8 @@ public class J2FCodeGenerator {
 		content.append("chmod a+x " + stagingDirectory + File.separator + "*\n");
 
 		return content.toString();
-	}	
-		
+	}
+
 	public String generateScriptFooter(File stagingDirectory, String currentDir) throws Exception {
 		StringBuffer content = new StringBuffer();
 		content.append("cd " + stagingDirectory.getAbsolutePath() + "\n");
@@ -210,5 +229,4 @@ public class J2FCodeGenerator {
 		return content.toString();
 	}
 
-	
 }

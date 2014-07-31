@@ -59,8 +59,8 @@ public class J2FParser {
 			while ((line = in.readLine()) != null) {
 
 				if (line.trim().startsWith("USE") || line.trim().startsWith("use")) {
-					if (line.indexOf("MOD_") > 0) {
-						String uses = line.trim().substring(line.trim().indexOf("MOD_")+4);
+					if (line.toLowerCase().indexOf("mod_") > 0) {
+						String uses = line.trim().substring(line.toLowerCase().trim().indexOf("mod_")+4);
 						usesList.add(uses);
 					}
 				}
