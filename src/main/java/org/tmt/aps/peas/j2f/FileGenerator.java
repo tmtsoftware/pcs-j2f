@@ -301,7 +301,6 @@ public class FileGenerator {
 				+ nameGenerator.getJNIHeaderFileName() + "\n");
 		// FIXME: include files need to be inputs, not constants
 		content.append("\tgcc -c -o " + nameGenerator.getCObjectFileName()
-				+ " -I/usr/lib/jvm/java-1.6.0-openjdk/include -I/usr/lib/jvm/java-1.6.0-openjdk/include/linux "
 				+ nameGenerator.getCSourceFileName() + " -fPIC \n\n");
 
 		content.append(nameGenerator.getJNIHeaderFileName() + ": " + nameGenerator.getJavaClassFileName() + "\n");
