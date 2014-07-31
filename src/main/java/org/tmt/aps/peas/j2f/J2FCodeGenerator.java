@@ -79,10 +79,12 @@ public class J2FCodeGenerator {
 			executeShellCommand("chmod a+x " + stagingDirectory + File.separator + "*");
 
 			// execute makefile
+			System.out.println("Executing: " + stagingDirectory + File.separator + "script.sh ...");
 			executeShellCommand("/bin/sh " + stagingDirectory + File.separator + "script.sh\n");
-
+			System.out.println("Done with script.sh\n");
+			
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();;
 			return e.getMessage();
 		}
 		return "success";

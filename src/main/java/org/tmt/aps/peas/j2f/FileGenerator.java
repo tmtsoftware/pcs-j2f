@@ -300,7 +300,7 @@ public class FileGenerator {
 		content.append(nameGenerator.getCObjectFileName() + ": " + nameGenerator.getCSourceFileName() + " "
 				+ nameGenerator.getJNIHeaderFileName() + "\n");
 		// FIXME: include files need to be inputs, not constants
-		content.append("\tgcc -c -o " + nameGenerator.getCObjectFileName()
+		content.append("\tgcc -c -o " + nameGenerator.getCObjectFileName() + " "
 				+ nameGenerator.getCSourceFileName() + " -fPIC \n\n");
 
 		content.append(nameGenerator.getJNIHeaderFileName() + ": " + nameGenerator.getJavaClassFileName() + "\n");
