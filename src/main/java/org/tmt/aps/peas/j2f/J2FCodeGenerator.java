@@ -82,9 +82,10 @@ public class J2FCodeGenerator {
 			System.out.println("Executing: " + stagingDirectory + File.separator + "script.sh ...");
 			executeShellCommand("/bin/sh " + stagingDirectory + File.separator + "script.sh\n");
 			System.out.println("Done with script.sh\n");
-			
+
 		} catch (Exception e) {
-			e.printStackTrace();;
+			e.printStackTrace();
+			;
 			return e.getMessage();
 		}
 		return "success";
@@ -145,12 +146,24 @@ public class J2FCodeGenerator {
 
 		try {
 			Runtime rt = Runtime.getRuntime();
-			Process p = rt.exec(command);
-			p.waitFor();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			Process proc = rt.exec(command);
 
+			// any error message?
+			StreamGobbler errorGobbler = new StreamGobbler(proc.getErrorStream(), "ERR");
+
+			// any output?
+			StreamGobbler outputGobbler = new StreamGobbler(proc.getInputStream(), "OUT");
+
+			// kick them off
+			errorGobbler.start();
+			outputGobbler.start();
+
+			// any error???
+			int exitVal = proc.waitFor();
+			System.out.println("ExitValue: " + exitVal);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 
 	private static File createTempDir() {
