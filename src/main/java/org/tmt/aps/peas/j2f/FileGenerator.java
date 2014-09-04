@@ -283,7 +283,23 @@ public class FileGenerator {
 		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg0\", \"D\");\n");
 		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg0);\n");
 		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg1\", \"D\");\n");
-		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg1);\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg1);\n");	
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg2\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg2);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg3\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg3);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg4\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg4);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg5\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg5);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg6\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg6);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg7\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg7);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg8\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg8);\n");
+		content.append("fid2 = (*env)->GetFieldID(env,clazz,\"arg9\", \"D\");\n");
+		content.append("(*env)->SetDoubleField(env, jretval, fid2, ret_val.arg9);\n");
 
 		content.append("}");
 
