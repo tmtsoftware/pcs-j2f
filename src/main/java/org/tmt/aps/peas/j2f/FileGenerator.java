@@ -59,6 +59,16 @@ public class FileGenerator {
 				content.append(argDesc.getArgName() + "_len1 * " + argDesc.getArgName() + "_len2");
 				content.append("];\n");
 			}
+			if (argDesc.getArgDimension() == 3) {
+				content.append("\t\t" + argDesc.getArgJavaDataType() + "[] " + argDesc.getArgName() + "_collapse = new " + argDesc.getArgJavaDataType() + "[");
+				content.append(argDesc.getArgName() + "_len1 * " + argDesc.getArgName() + "_len2 * " + argDesc.getArgName() + "_len3");
+				content.append("];\n");
+			}
+			if (argDesc.getArgDimension() == 4) {
+				content.append("\t\t" + argDesc.getArgJavaDataType() + "[] " + argDesc.getArgName() + "_collapse = new " + argDesc.getArgJavaDataType() + "[");
+				content.append(argDesc.getArgName() + "_len1 * " + argDesc.getArgName() + "_len2 * " + argDesc.getArgName() + "_len3 * " + argDesc.getArgName() + "_len4");
+				content.append("];\n");
+			}
 		}
 		
 		// collapse 2-d to 1-d
@@ -85,7 +95,7 @@ public class FileGenerator {
 				content.append(argDesc.getArgName() + "_outArray,");
 			} else {
 				
-				if (argDesc.getArgDimension() == 2) {
+				if (argDesc.getArgDimension() >= 2) {
 					content.append(argDesc.getArgName() + "_collapse,");
 				} else {
 					content.append(argDesc.getArgName() + ",");

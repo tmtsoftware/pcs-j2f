@@ -21,6 +21,7 @@ public class DataTypeMapper {
 		fortran2Native.put("REAL", "float");
 		fortran2Native.put("REAL*8", "double");
 		fortran2Native.put("DOUBLE PRECISION", "double");
+		fortran2Native.put("INTEGER*8", "long");
 	
 	 
 		native2JNI.put("unsigned char", "jboolean");
@@ -28,18 +29,21 @@ public class DataTypeMapper {
 		native2JNI.put("int", "jint");
 		native2JNI.put("float", "jfloat");
 		native2JNI.put("double", "jdouble");
+		native2JNI.put("long", "jlong");
 	
 		jni2Java.put("jboolean", "byte");
 		jni2Java.put("jshort", "short");
 		jni2Java.put("jint", "int");
 		jni2Java.put("jfloat", "float");
 		jni2Java.put("jdouble", "double");
+		jni2Java.put("jlong", "long");
 	
 		jni2JavaWrapper.put("jboolean", "Byte");
 		jni2JavaWrapper.put("jshort", "Short");
 		jni2JavaWrapper.put("jint", "Integer");
 		jni2JavaWrapper.put("jfloat", "Float");
 		jni2JavaWrapper.put("jdouble", "Double");
+		jni2JavaWrapper.put("jlong", "Long");
 
 
 		jni2JavaPrimitiveGet.put("jboolean", "byteValue()");
@@ -47,6 +51,7 @@ public class DataTypeMapper {
 		jni2JavaPrimitiveGet.put("jint", "intValue()");
 		jni2JavaPrimitiveGet.put("jfloat", "floatValue()");
 		jni2JavaPrimitiveGet.put("jdouble", "doubleValue()");
+		jni2JavaPrimitiveGet.put("jlong", "longValue()");
 
 	}
 	
