@@ -109,6 +109,7 @@ public class J2FParser {
   		// 
   		Element function = (Element)doc.getElementsByTagName("function").item(0);
   		fd.setFunctionName(function.getAttribute("name"));
+  		fd.setGenerateJni(!"false".equals(function.getAttribute("generate-jni")));
   		fd.setAuthor(getTagValue(function, "author"));
   		fd.setFunctionShortDesc(getTagValue(function, "function-short-desc"));
   		fd.setFunctionLongDesc(getTagValue(function, "function-long-desc"));

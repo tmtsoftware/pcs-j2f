@@ -356,7 +356,26 @@ public class FileGenerator {
 		return content.toString();
 
 	}
+	
+	public String generateFortranOnlyMakefileSegment(File stagingDirectory) throws Exception {
 
+		// Generate input string
+		StringBuffer content = new StringBuffer();
+
+		content.append(nameGenerator.getFortranObjectFileName() + ": " + nameGenerator.getFortranSourceFileName()
+				+ " structures.mod mod_logWrite.mod");
+		for (String uses : functionDescriptor.getUsesList()) {
+			content.append(" " + uses + ".o ");
+		}
+		content.append("\n");
+		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
+
+		return content.toString();
+
+	}
+	
+	
 	public List<String> generateObjectFileList() {
 		
 		List<String> list = new ArrayList<String>();
@@ -366,6 +385,15 @@ public class FileGenerator {
 		
 		return list;
 	}
+	
+	public List<String> generateFortranOnlyObjectFileList() {
+		
+		List<String> list = new ArrayList<String>();
+		list.add(nameGenerator.getFortranObjectFileName());
+		
+		return list;
+	}
+
 
 
 	public String generateScriptSegment(File stagingDirectory, String fortranFileName, String currentDir, File fortranDir) throws Exception {

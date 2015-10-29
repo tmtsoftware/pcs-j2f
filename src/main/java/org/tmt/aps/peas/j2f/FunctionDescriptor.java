@@ -5,6 +5,7 @@ import java.util.List;
 public class FunctionDescriptor {
 	
 	String functionName;
+	boolean generateJni;
 	String author;
 	String functionShortDesc;
 	String functionLongDesc;
@@ -53,7 +54,13 @@ public class FunctionDescriptor {
 	}
 	public void setUsesList(List<String> usesList) {
 		this.usesList = usesList;
-	} 
+	}
+	public boolean isGenerateJni() {
+		return generateJni;
+	}
+	public void setGenerateJni(boolean generateJni) {
+		this.generateJni = generateJni;
+	}
 	
 	
 }

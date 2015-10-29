@@ -53,7 +53,7 @@ public class J2FCodeGenerator {
 
 			for (File fortranFile : fortranDir.listFiles()) {
 
-				if (!fortranFile.isDirectory()) {
+				if (!fortranFile.isDirectory() && !fortranFile.getName().equals("logWrite.f90") && !fortranFile.getName().equals("structures.f90")) {
 					System.out.println("fortranFile = " + fortranFile);
 					generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
 				}
@@ -100,7 +100,7 @@ public class J2FCodeGenerator {
 			// found a file that does require processing, skip it.
 			return;
 		}
-
+		
 		String fortranFileName = fortranFile.getName();
 
 		// Generate names
@@ -109,17 +109,23 @@ public class J2FCodeGenerator {
 		// use the nameGenerator as a source of information for creating files
 		FileGenerator fileGenerator = new FileGenerator(nameGenerator, fortranFunctionDescriptor);
 
-		fileGenerator.generateJavaSourceFile(stagingDirectory);
-		fileGenerator.generateCSourceFile(stagingDirectory);
-		fileGenerator.generateFFESourceFile(stagingDirectory);
-
-		String makefileSegment = fileGenerator.generateMakefileSegment(stagingDirectory);
+		if (fortranFunctionDescriptor.isGenerateJni()) {
+			fileGenerator.generateJavaSourceFile(stagingDirectory);
+			fileGenerator.generateCSourceFile(stagingDirectory);
+			fileGenerator.generateFFESourceFile(stagingDirectory);
+		}
+		
+		String makefileSegment = fortranFunctionDescriptor.isGenerateJni() ? 
+				fileGenerator.generateMakefileSegment(stagingDirectory) :
+				fileGenerator.generateFortranOnlyMakefileSegment(stagingDirectory) ;
 		makeBuffer.append(makefileSegment);
 
 		String scriptSegment = fileGenerator.generateScriptSegment(stagingDirectory, fortranFileName, currentDir, fortranDir);
 		scriptBuffer.append(scriptSegment);
 
-		List<String> objFiles = fileGenerator.generateObjectFileList();
+		List<String> objFiles = fortranFunctionDescriptor.isGenerateJni() ?
+				fileGenerator.generateObjectFileList() :
+				fileGenerator.generateFortranOnlyObjectFileList();
 		objectFileNameList.addAll(objFiles);
 
 	}
