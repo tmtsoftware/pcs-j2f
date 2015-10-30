@@ -350,7 +350,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form -I/usr/include \n\n");
 
 
 		return content.toString();
@@ -369,7 +369,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form -I/usr/include \n\n");
 
 		return content.toString();
 
