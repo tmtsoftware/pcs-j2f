@@ -83,6 +83,42 @@ public class FileGenerator {
 				content.append("\t\t\t} \n");
 				content.append("\t\t} \n");				
 			}
+			
+			if (argDesc.getArgDimension() == 3) {
+				
+				content.append("\t\t// collapse array to one dimension\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\tfor (int k=0; j<" + argDesc.getArgName() + "_len3; k++) { \n");
+				content.append("\t\t\t\t" + argDesc.getArgName() + "_collapse[i*" 
+				    + argDesc.getArgName() +  "_len2 * "+   argDesc.getArgName() + "_len3 + "
+					+ "j * " + argDesc.getArgName() +  "_len3 + k] = " 
+			    	+ argDesc.getArgName() + "[i][j][k]; \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+
+			if (argDesc.getArgDimension() == 4) {
+				
+				content.append("\t\t// collapse array to one dimension\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\tfor (int k=0; k<" + argDesc.getArgName() + "_len3; k++) { \n");
+				content.append("\t\t\tfor (int l=0; l<" + argDesc.getArgName() + "_len4; l++) { \n");
+				content.append("\t\t\t\t" + argDesc.getArgName() + "_collapse[i*" 
+				    + argDesc.getArgName() +  "_len2 * "+   argDesc.getArgName() + "_len3 * " + argDesc.getArgName() + "_len4 + "
+					+ "j * " + argDesc.getArgName() +  "_len3 * " + argDesc.getArgName() + "_len4 + "
+					+ "k * " + argDesc.getArgName() +  "_len4 + l] = " 
+			    	+ argDesc.getArgName() + "[i][j][k][l]; \n");
+
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+
+		
 		}
 		
 		
@@ -120,6 +156,44 @@ public class FileGenerator {
 				content.append("\t\t\t} \n");
 				content.append("\t\t} \n");				
 			}
+			
+			if (argDesc.getArgDimension() == 3) {
+				
+				content.append("\t\t// expand array to three dimensions\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\tfor (int k=0; k<" + argDesc.getArgName() + "_len3; k++) { \n");
+				
+				content.append("\t\t\t\t" + argDesc.getArgName() + "[i][j][k] = " 
+				  + argDesc.getArgName() + "_collapse[i*" + argDesc.getArgName() + "_len2 * " + argDesc.getArgName() + "_len3 +"
+				  		+ "j * " + argDesc.getArgName() + "_len3 +  " 
+				  		+ " k];\n");
+
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+			
+			if (argDesc.getArgDimension() == 4) {
+				
+				content.append("\t\t// expand array to four dimensions\n");
+				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
+				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
+				content.append("\t\t\tfor (int k=0; k<" + argDesc.getArgName() + "_len3; k++) { \n");
+				content.append("\t\t\tfor (int l=0; l<" + argDesc.getArgName() + "_len4; l++) { \n");
+				
+				content.append("\t\t\t\t" + argDesc.getArgName() + "[i][j][k][l] = " 
+				  + argDesc.getArgName() + "_collapse[i*" + argDesc.getArgName() + "_len2 * " + argDesc.getArgName() + "_len3 *" + argDesc.getArgName() + "_len4 +"
+				  		+ "j * " + argDesc.getArgName() + "_len3 *  " + argDesc.getArgName() + "_len4 +  " 
+				  		+ "k * " + argDesc.getArgName() + "_len4 +  " 
+				  		+ " l];\n");
+
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t\t} \n");
+				content.append("\t\t} \n");				
+			}
+			
 		}
 		
 		
@@ -493,6 +567,8 @@ public class FileGenerator {
 
 		content.append("\tINTEGER :: i\n\n");
 		content.append("\tINTEGER :: j\n\n");
+		content.append("\tINTEGER :: K\n\n");
+		content.append("\tINTEGER :: l\n\n");
 		
 		// define all the "generated" variables, including the dimension sizes
 		for (ArgumentDescriptor argDesc : functionDescriptor.getGeneratedFunctionArgs()) {
@@ -578,6 +654,46 @@ public class FileGenerator {
 				
 			}
 			
+			if (argDesc.getArgDimension() == 3) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+				content.append("\t\tdo k=1, " + argDesc.getChildArgs().get(2).getArgName() + "\n");
+
+				content.append("\t\t\tlocal_" + argDesc.getArgName() + "(i,j, k) = " + argDesc.getArgName() +
+						"((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " * " + argDesc.getChildArgs().get(2).getArgName()+ 
+						"+ (j-1)*" + argDesc.getChildArgs().get(2).getArgName() + 
+						" + k)\n");
+				
+				content.append("\t\tenddo\n");
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+			
+			if (argDesc.getArgDimension() == 4) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+				content.append("\t\tdo k=1, " + argDesc.getChildArgs().get(2).getArgName() + "\n");
+				content.append("\t\tdo l=1, " + argDesc.getChildArgs().get(3).getArgName() + "\n");
+
+				content.append("\t\t\tlocal_" + argDesc.getArgName() + "(i,j,k,l) = " + argDesc.getArgName() +
+						"((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " * " + argDesc.getChildArgs().get(2).getArgName() + 
+						" * " + argDesc.getChildArgs().get(3).getArgName() +
+						"+ (j-1)*" + argDesc.getChildArgs().get(2).getArgName() +  " * " + argDesc.getChildArgs().get(3).getArgName() +
+						"+ (k-1)*" + argDesc.getChildArgs().get(3).getArgName() + 
+						" + l)\n");
+				
+				content.append("\t\tenddo\n");
+				content.append("\t\tenddo\n");
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+			
 			
 			content.append("\n");
 		}
@@ -631,7 +747,50 @@ public class FileGenerator {
 				content.append("\tenddo\n");
 				
 			}
-			
+			if (argDesc.getArgDimension() == 3) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+				content.append("\t\tdo k=1, " + argDesc.getChildArgs().get(2).getArgName() + "\n");
+
+				content.append("\t\t\t" + argDesc.getArgName() + 
+						"((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " * " + argDesc.getChildArgs().get(2).getArgName() +
+						"+ (j-1)*" + argDesc.getChildArgs().get(2).getArgName() + 
+						" + k) = local_" + argDesc.getArgName() + "(i,j,k)\n");
+				
+					
+				content.append("\t\t\tenddo\n");
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+			if (argDesc.getArgDimension() == 4) {
+			//if (argDesc.getArgDimension() > 0 && argDesc.isInput()) {  // TODO: when input/output is reworked
+								
+				content.append("\tdo i=1, " + argDesc.getChildArgs().get(0).getArgName() + "\n");
+				content.append("\t\tdo j=1, " + argDesc.getChildArgs().get(1).getArgName() + "\n");
+				content.append("\t\tdo k=1, " + argDesc.getChildArgs().get(2).getArgName() + "\n");
+				content.append("\t\tdo l=1, " + argDesc.getChildArgs().get(3).getArgName() + "\n");
+
+				content.append("\t\t\t" + argDesc.getArgName() + 
+						"((i-1)*" + argDesc.getChildArgs().get(1).getArgName() + " * " + argDesc.getChildArgs().get(2).getArgName() +
+						" * " + argDesc.getChildArgs().get(3).getArgName() +
+						
+						"+ (j-1)*" + argDesc.getChildArgs().get(2).getArgName() + " * " + argDesc.getChildArgs().get(3).getArgName() +
+						
+								"+ (k-1)*" + argDesc.getChildArgs().get(3).getArgName() + 
+						" + l) = local_" + argDesc.getArgName() + "(i,j,k,l)\n");
+				
+					
+				content.append("\t\t\t\tenddo\n");
+				content.append("\t\t\tenddo\n");
+				content.append("\t\tenddo\n");
+				content.append("\tenddo\n");
+				
+			}
+				
+				
 			
 			
 			content.append("\n");
