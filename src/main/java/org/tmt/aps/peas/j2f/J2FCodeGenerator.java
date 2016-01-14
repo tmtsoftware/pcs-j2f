@@ -205,7 +205,7 @@ public class J2FCodeGenerator {
 			heading.append(objectFileName + " \\\n");
 		}
 		heading.append("logWrite.o" + " \\\n");
-		heading.append(" -lgfortran -llapack -lblas\n\n");
+		heading.append(" -lgfortran -llapack -lblas -lfftw3 \n\n");
 
 		return heading.toString();
 	}
