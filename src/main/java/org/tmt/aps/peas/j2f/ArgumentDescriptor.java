@@ -99,7 +99,6 @@ public class ArgumentDescriptor {
 		this.childArgs = childArgs;
 	}
 	public boolean isNonScalarOutput() {
-		// TODO Auto-generated method stub
 		return (argInOut.toUpperCase().equals("OUT") && argDimension != 0);
 	}
 }

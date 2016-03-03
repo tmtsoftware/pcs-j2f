@@ -156,12 +156,12 @@ public class NameGenerator {
 	}
 
 	public String getFFESourceFileName() {
-		// TODO Auto-generated method stub
+		
 		return "ffe_" + fortranFileName;
 	}
 
 	public String getFFEFunctionName() {
-		// TODO Auto-generated method stub	
+			
 		return "ffe_" + functionName;
 	}
 	
