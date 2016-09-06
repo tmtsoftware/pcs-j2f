@@ -246,6 +246,7 @@ public class J2FCodeGenerator {
 		// copy Java and library file to current directory
 		content.append("cp " + "*.java" + " " + currentDir + "\n");
 		content.append("cp libpeas.so /opt/apps/lib" + "\n");
+		content.append("cp *.mod /opt/apps/include" + "\n");
 
 		return content.toString();
 	}
