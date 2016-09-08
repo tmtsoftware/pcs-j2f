@@ -243,9 +243,11 @@ public class J2FCodeGenerator {
 		content.append("cd " + stagingDirectory.getAbsolutePath() + "\n");
 		content.append("make" + "\n");
 
+		content.append("jar -cf peas-lang-interop.jar org" + "\n");
 		// copy Java and library file to current directory
 		content.append("cp " + "*.java" + " " + currentDir + "\n");
 		content.append("cp libpeas.so /opt/apps/lib" + "\n");
+		content.append("cp peas-lang-interop.jar /opt/apps/lib" + "\n");
 		content.append("cp *.mod /opt/apps/include" + "\n");
 
 		return content.toString();
