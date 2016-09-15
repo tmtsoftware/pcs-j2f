@@ -28,7 +28,7 @@ public class NameGenerator {
 	}
 	
 	public String getJavaClassFileName() {
-		return "J" + functionName + ".class";
+		return "org/tmt/aps/peas/lang/interop/J" + functionName + ".class";
 	}
 	
 	public String getCObjectFileName() {
@@ -48,7 +48,7 @@ public class NameGenerator {
 	}
 	
 	public String getJNIHeaderFileName() {
-		return "J" + functionName + ".h";
+		return "org_tmt_aps_peas_lang_interop_J" + functionName + ".h";
 	}
 	
 	public String getCFunctionName() {

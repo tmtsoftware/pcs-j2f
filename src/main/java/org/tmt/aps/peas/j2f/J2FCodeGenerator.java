@@ -46,7 +46,16 @@ public class J2FCodeGenerator {
 	public String generate(File fortranDir, String javaPackage, String currentDir) {
 
 		try {
-			File stagingDirectory = createTempDir();
+			//File stagingDirectory = createTempDir();
+			File stagingDirectory = new File("/opt/apps/j2f/staging");
+			if (! stagingDirectory.exists()){
+				stagingDirectory.mkdir();
+		    }
+			
+			// but since this is generating files, they will always be newer and have to be recompiled.  How to fix?
+			
+			
+			
 			System.out.println("currentDir = " + currentDir);
 			System.out.println("stagingDirectory = " + stagingDirectory);
 			System.out.println("fortranDir = " + fortranDir);
@@ -54,7 +63,7 @@ public class J2FCodeGenerator {
 			for (File fortranFile : fortranDir.listFiles()) {
 
 				if (!fortranFile.isDirectory() && !fortranFile.getName().equals("logWrite.f90") && !fortranFile.getName().equals("structures.f90")) {
-					System.out.println("fortranFile = " + fortranFile);
+					//System.out.println("fortranFile = " + fortranFile);
 					generateFiles(fortranFile, currentDir, stagingDirectory, fortranDir);
 				}
 			}
@@ -76,7 +85,8 @@ public class J2FCodeGenerator {
 			// create and write to file
 			FileGenerator.createAndWriteFile(stagingDirectory, "script.sh", scriptBuffer.toString());
 
-			executeShellCommand("chmod a+x " + stagingDirectory + File.separator + "*");
+			//System.out.println("chmod a+x " + stagingDirectory + File.separator + "*.sh");
+			//executeShellCommand("chmod a+x " + stagingDirectory + File.separator + "*.sh");
 
 			// execute makefile
 			System.out.println("Executing: " + stagingDirectory + File.separator + "script.sh ...");
@@ -85,7 +95,6 @@ public class J2FCodeGenerator {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			;
 			return e.getMessage();
 		}
 		return "success";
@@ -217,7 +226,7 @@ public class J2FCodeGenerator {
 		footer.append("structures.mod: structures.f90 \n");
 		footer.append("\tgfortran -c structures.f90 \n\n");
 
-		footer.append("mod_logWrite.mod: logWrite.f90 \n");
+		footer.append("mod_logwrite.mod: logWrite.f90 \n");
 		footer.append("\tgfortran -c logWrite.f90 -fPIC \n\n");
 
 		footer.append("clean:\n");
