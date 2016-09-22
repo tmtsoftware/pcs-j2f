@@ -98,7 +98,7 @@ public class FileGenerator {
 				content.append("\t\t// collapse array to one dimension\n");
 				content.append("\t\tfor (int i=0; i<" + argDesc.getArgName() + "_len1; i++) { \n");
 				content.append("\t\t\tfor (int j=0; j<" + argDesc.getArgName() + "_len2; j++) { \n");
-				content.append("\t\t\tfor (int k=0; j<" + argDesc.getArgName() + "_len3; k++) { \n");
+				content.append("\t\t\tfor (int k=0; k<" + argDesc.getArgName() + "_len3; k++) { \n");
 				content.append("\t\t\t\t" + argDesc.getArgName() + "_collapse[i*" 
 				    + argDesc.getArgName() +  "_len2 * "+   argDesc.getArgName() + "_len3 + "
 					+ "j * " + argDesc.getArgName() +  "_len3 + k] = " 
