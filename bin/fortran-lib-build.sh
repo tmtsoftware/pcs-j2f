@@ -3,7 +3,7 @@
 
 BUILD_DIR=/opt/apps/peasBuild
 GIT_DIR=${BUILD_DIR}/git
-JAVA_INCLUDE_PATH=/usr/lib/jvm/java-1.7.0-oracle-1.7.0.79.x86_64/include
+JAVA_INCLUDE_PATH=$JAVA_HOME/include
 
 
 echo "building J2F"
