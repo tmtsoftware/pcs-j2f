@@ -15,6 +15,7 @@ fi
 MAVEN_REPO_HOME=/home/smichaels/.m2/repository
 BUILD_DIR=/opt/apps/peasBuild
 FORTRAN_LIB_DIR=/opt/apps/lib
+FORTRAN_INC_DIR=/opt/apps/include
 GIT_DIR=${BUILD_DIR}/git
 JAVA_INCLUDE_PATH=$JAVA_HOME/include
 
@@ -60,9 +61,6 @@ else
       echo "no version specified, please specify a version"    
    else
 
-	  echo "renaming current library to libpeas.so.current"
-	  mv ${FORTRAN_LIB_DIR}/libpeas.so ${FORTRAN_LIB_DIR}/libpeas.so.current
-		
 	  echo "building J2F"
 	  cd ${GIT_DIR}/pcs-j2f
 	  mvn clean package
@@ -78,11 +76,16 @@ else
       echo $VERSION
       cd $FORTRAN_LIB_DIR
       mvn install:install-file -Dfile=libpeas.so -DgroupId=org.tmt -DartifactId=libpeas -Dversion=$VERSION -Dpackaging=so   
+
+# jar up the mod files
+      cd $FORTRAN_INC_DIR
+      jar -cvf mods.jar *.mod
+      mvn install:install-file -Dfile=mods.jar -DgroupId=org.tmt -DartifactId=modFiles -Dversion=$VERSION -Dpackaging=jar
+
+
+
    fi
    
-   
-   echo "restoring current library to libpeas.so"
-   mv ${FORTRAN_LIB_DIR}/libpeas.so.current ${FORTRAN_LIB_DIR}/libpeas.so   
    
 fi
 
@@ -93,12 +96,20 @@ if [ -z "$INSTALL" ]; then
 else
    if [ -z "$VERSION" ]; then
       echo "using latest published version to install"
-      VERSION="$(java -cp $GIT_DIR/pcs-j2f/target/classes org.tmt.aps.peas.j2f.tools.VersionTool -v $MAVEN_REPO_HOME/org/tmt/libpeas 2>&1)
-"
+      VERSION="$(java -cp $GIT_DIR/pcs-j2f/target/classes org.tmt.aps.peas.j2f.tools.VersionTool -v $MAVEN_REPO_HOME/org/tmt/libpeas 2>&1)"
    fi
 
    cp ${MAVEN_REPO_HOME}/org/tmt/libpeas/$VERSION/*.so ${FORTRAN_LIB_DIR}/libpeas.so
 
+   cp ${MAVEN_REPO_HOME}/org/tmt/modFiles/$VERSION/*.jar ${FORTRAN_INC_DIR}/mods.jar
+
+   cd ${FORTRAN_INC_DIR}
+
+   jar -xvf mods.jar
+
+   cd ${BUILD_DIR}
+
    echo "Installation of fortran library version $VERSION completed"
    
 fi
+
