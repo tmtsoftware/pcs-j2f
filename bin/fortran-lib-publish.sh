@@ -18,6 +18,7 @@ FORTRAN_LIB_DIR=/opt/apps/lib
 FORTRAN_INC_DIR=/opt/apps/include
 GIT_DIR=${BUILD_DIR}/git
 JAVA_INCLUDE_PATH=$JAVA_HOME/include
+FORTRAN_SRC_DIR=${GIT_DIR}/pcs-fortran/src
 
 
 
@@ -81,6 +82,13 @@ else
       cd $FORTRAN_INC_DIR
       jar -cvf mods.jar *.mod
       mvn install:install-file -Dfile=mods.jar -DgroupId=org.tmt -DartifactId=modFiles -Dversion=$VERSION -Dpackaging=jar
+      rm mods.jar
+
+# jar up the src files
+      cd $FORTRAN_SRC_DIR
+      jar -cvf source.jar *.f90
+      mvn install:install-file -Dfile=source.jar -DgroupId=org.tmt -DartifactId=sourceFiles -Dversion=$VERSION -Dpackaging=jar
+      rm source.jar
 
 
 
@@ -107,9 +115,18 @@ else
 
    jar -xvf mods.jar
 
+   rm mods.jar
+
+   cp ${MAVEN_REPO_HOME}/org/tmt/sourceFiles/$VERSION/*.jar ${FORTRAN_SRC_DIR}/source.jar
+
+   cd ${FORTRAN_SRC_DIR}
+
+   jar -xvf source.jar
+
+   rm source.jar
+
    cd ${BUILD_DIR}
 
    echo "Installation of fortran library version $VERSION completed"
    
 fi
-
