@@ -17,7 +17,7 @@ public class NameGenerator {
 	}
 	
 	public String getJavaSourceFileName() {
-		return "J" + functionName + ".java";
+		return "org/tmt/aps/peas/lang/interop/J" + functionName + ".java";
 	}
 	
 	public String getCSourceFileName() {

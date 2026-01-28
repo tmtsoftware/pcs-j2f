@@ -242,6 +242,50 @@ public class FileGenerator {
 		content.append("	};\n");
 		content.append("\n");
 
+        /**
+        * TODO: place definition here 
+        */
+        content.append("extern void " + nameGenerator.getCCallableFortranFunctionName() + "(\n");
+        content.append("\tstruct retval *ptx,\n");
+        for (Iterator<ArgumentDescriptor> it = functionDescriptor.getFunctionArgs().iterator(); it.hasNext();) {
+			ArgumentDescriptor argDesc = it.next();
+			if (argDesc.isScalar()) { 
+				content.append("\t" + argDesc.getArgCDataType() + " " + "*f_" + argDesc.getArgName() + ",\n");
+			} else {
+                content.append("\t" + argDesc.getArgCDataType() + " " + "*f_" + argDesc.getArgName() + ",\n");
+				for (int i=0; i<argDesc.getArgDimension(); i++) {
+					content.append("\t" + "int" + " " + "*f_" + argDesc.getArgName() + "_len" + (i+1) + ",\n");
+				}
+			}
+		}
+        content.deleteCharAt(content.length() - 2);
+        content.append(");\n\n");
+        
+        /* Expected result
+        extern void ffe_firstfourierpeakactual_(
+            struct retval *ptx,
+            float *f_u_theoretical,
+            float *f_v_theoretical,
+            float *f_u_delta_0,
+            int *f_nxt,
+            int *nxt_len1,
+            int *f_nyt,
+            int *nyt_len1,
+            int *f_npeak,
+            int *f_icenter,
+            int *f_jcenter,
+            float *f_u_actual,
+            float *f_v_actual,
+            float *f_q_factor,
+            float *f_trans_actual
+        );
+        */
+
+
+    
+    
+        
+        
 		content.append("JNIEXPORT void JNICALL " + nameGenerator.getCFunctionName() + "(" + nameGenerator.getCFunctionSignature()
 				+ ")\n");
 		content.append("{\n");
@@ -410,11 +454,14 @@ public class FileGenerator {
 				+ nameGenerator.getJNIHeaderFileName() + "\n");
 		// FIXME: include files need to be inputs, not constants
 		content.append("\tgcc -c -o " + nameGenerator.getCObjectFileName() + " "
-				+ nameGenerator.getCSourceFileName() + " -fPIC \n\n");
+				+ nameGenerator.getCSourceFileName() + " $(CFLAGS)\n\n");
 
-		content.append(nameGenerator.getJNIHeaderFileName() + ": " + nameGenerator.getJavaClassFileName() + "\n");
-		content.append("\tjavah -jni -force org.tmt.aps.peas.lang.interop." + nameGenerator.getJavaClassName() + "\n\n");
+        
+		content.append(nameGenerator.getJNIHeaderFileName() + ": " + nameGenerator.getJavaSourceFileName() + "\n");
+		content.append("\tjavac -h . org/tmt/aps/peas/lang/interop/RetVal.java " + nameGenerator.getJavaSourceFileName() + "\n\n");
 
+        
+        
 		content.append(nameGenerator.getJavaClassFileName() + ": " + nameGenerator.getJavaSourceFileName() + "\n");
 		content.append("\tjavac -d . RetVal.java\n");
 		content.append("\tjavac -d . " + nameGenerator.getJavaSourceFileName() + "\n\n");
@@ -433,7 +480,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form -I/usr/include -I /usr/local/include \n\n");
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form $(FORTRAN_INCLUDES) \n\n");
 
 
 		return content.toString();
@@ -452,7 +499,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form -I/usr/include -I/usr/local/include \n\n");
+				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form $(FORTRAN_INCLUDES) \n\n");
 
 		return content.toString();
 

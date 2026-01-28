@@ -199,8 +199,32 @@ public class J2FCodeGenerator {
 
 	public String generateMakefileHeading() throws Exception {
 
+        StringBuffer heading = new StringBuffer();
+        heading.append("UNAME_S := $(shell uname -s)\n\n");
+        heading.append("JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n\n");
+        heading.append("ifeq ($(UNAME_S),Darwin)\n");
+        heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin\n");
+        heading.append("\tFORTRAN_INCLUDES=\n");
+        heading.append("else ifeq ($(UNAME_S),Linux)\n");
+        heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux\n");
+        heading.append("\tFORTRAN_INCLUDES = -I/usr/include -I/usr/local/include\n");
+        heading.append("endif\n\n");
+        heading.append("CFLAGS += -fPIC $(JNI_INC)\n\n");
+        
+
+
+
+    
+
+    
+
+
+
+        
+        
+        
 		// Generate input string
-		StringBuffer heading = new StringBuffer();
+		
 		heading.append("products: libpeas.so\n\n");
 
 		heading.append("libpeas.so: ");
@@ -227,7 +251,7 @@ public class J2FCodeGenerator {
 		footer.append("\tgfortran -c structures.f90 \n\n");
 
 		footer.append("mod_logwrite.mod: logWrite.f90 \n");
-		footer.append("\tgfortran -c logWrite.f90 -fPIC \n\n");
+		footer.append("\tgfortran -c logWrite.f90 $(CFLAGS) \n\n");
 
 		footer.append("clean:\n");
 		footer.append("\trm *.so *.class *.h *.o\n");
