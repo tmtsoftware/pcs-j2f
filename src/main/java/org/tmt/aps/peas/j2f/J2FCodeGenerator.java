@@ -200,45 +200,85 @@ public class J2FCodeGenerator {
 	public String generateMakefileHeading() throws Exception {
 
         StringBuffer heading = new StringBuffer();
+
         heading.append("UNAME_S := $(shell uname -s)\n\n");
+        
+        heading.append("CC ?= gcc\n\n");
+        heading.append("FC ?= gfortran\n\n");
+        
+        heading.append("BLAS_LIBS := $(shell $(PKG_CONFIG) --libs blas)\n");
+        heading.append("FFTW_LIBS := $(shell $(PKG_CONFIG) --libs fftw3)\n\n");
+        
+        
+        
+        
+
         heading.append("JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n\n");
         heading.append("ifeq ($(UNAME_S),Darwin)\n");
+        
+        heading.append("\t# macOS\n");
+        heading.append("\tLD := clang\n");
+        
+        
         heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin\n");
         heading.append("\tFORTRAN_INCLUDES=\n");
+        heading.append("\tSHLIB_EXT     := dylib  \n");
+        heading.append("\tSHLIB_LDFLAGS := -dynamiclib -Wl,-undefined,dynamic_lookup  \n");
+        heading.append("\t# OpenMP (Homebrew LLVM + libomp)  \n");
+        heading.append("\tOMP_CFLAGS  := -Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include  \n");
+        heading.append("\tOMP_LDFLAGS := -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/libomp/lib -lomp\n");
+        
+        heading.append("\tGFORTRAN_LIBDIR := $(shell gfortran -print-file-name=libgfortran.dylib | xargs dirname)\n");
+        heading.append("\tFORTRAN_LIBS := -L$(GFORTRAN_LIBDIR) -Wl,-rpath,$(GFORTRAN_LIBDIR) -lgfortran\n");
+        
         heading.append("else ifeq ($(UNAME_S),Linux)\n");
+        
+        heading.append("\t# Linux\n");
+        heading.append("\tLD := $FC\n");
+
         heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux\n");
         heading.append("\tFORTRAN_INCLUDES = -I/usr/include -I/usr/local/include\n");
+        heading.append("\tSHLIB_EXT     := so  \n");
+        heading.append("\tSHLIB_LDFLAGS := -shared  \n");
+        heading.append("\tOMP_CFLAGS  := -fopenmp  \n");
+        heading.append("\tOMP_LDFLAGS := -fopenmp  \n");
+        heading.append("\tFORTRAN_LIBS := \n");
+        
         heading.append("endif\n\n");
-        heading.append("CFLAGS += -fPIC $(JNI_INC)\n\n");
+        heading.append("CFLAGS += -fPIC $(JNI_INC)\n");
+        
+        heading.append("FFLAGS += -fPIC -ffree-form $(FORTRAN_INCLUDES)\n\n");
+        heading.append("# handle external libraries\n\n");
+        heading.append("FFTW_CFLAGS := $(shell pkg-config --cflags fftw3)\n");
+        heading.append("FFTW_LIBS   := $(shell pkg-config --libs fftw3)\n\n");
+        heading.append("PKGS = fftw3 blas lapack\n\n");
+        heading.append("CFLAGS  += $(shell pkg-config --cflags $(PKGS))\n");
+        heading.append("FFLAGS  += $(shell pkg-config --cflags $(PKGS))\n");
+        
+        heading.append("CFLAGS := $(filter-out -fopenmp,$(CFLAGS))\n\n");     
         
 
-
-
-    
-
-    
-
-
-
-        
-        
+        heading.append("LDFLAGS += $(shell pkg-config --cflags $(PKGS))\n");
+        heading.append("LDFLAGS += $(SHLIB_LDFLAGS) $(OMP_LDFLAGS)\n\n");
+            
+        heading.append("LIBS += $(BLAS_LIBS) $(FFTW_LIBS) $(OMP_LDFLAGS) $(FORTRAN_LIBS)\n\n");
         
 		// Generate input string
 		
-		heading.append("products: libpeas.so\n\n");
+		heading.append("products: libpeas.$(SHLIB_EXT)\n\n");
 
-		heading.append("libpeas.so: ");
+		heading.append("libpeas.$(SHLIB_EXT): ");
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}
 		heading.append("logWrite.o" + " \\\n");
 		heading.deleteCharAt(heading.length() - 2);
-		heading.append("\tgcc --shared -o libpeas.so ");
+		heading.append("\t$(LD) $(SHLIB_LDFLAGS) -o libpeas.$(SHLIB_EXT) ");
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}
 		heading.append("logWrite.o" + " \\\n");
-		heading.append(" -lgfortran -llapack -lblas -lfftw3 \n\n");
+		heading.append(" $(LIBS) \n\n");
 
 		return heading.toString();
 	}
@@ -267,6 +307,26 @@ public class J2FCodeGenerator {
 		content.append("#!/bin/sh\n");
 
 		content.append("chmod a+x " + stagingDirectory + File.separator + "*\n");
+        
+        content.append("export PKG_CONFIG_PATH=\"/usr/local/opt/openblas/lib/pkgconfig:$PKG_CONFIG_PATH\"\n\n");
+        content.append("export MACOSX_DEPLOYMENT_TARGET=15.0\n\n");
+        
+        content.append("#!/bin/bash\n\n");
+        content.append("UNAME_S=$(uname -s)\n\n");
+        content.append("if [ \"$UNAME_S\" = \"Darwin\" ]; then\n");
+        content.append("    # macOS\n");
+        content.append("    SHLIB_EXT=\"dylib\"\n");
+        content.append("elif [ \"$UNAME_S\" = \"Linux\" ]; then\n");
+        content.append("    # Linux\n");
+        content.append("    SHLIB_EXT=\"so\"\n");
+        content.append("else\n");
+        content.append("    echo \"Unsupported OS: $UNAME_S\"\n");
+        content.append("    exit 1\n");
+        content.append("fi\n\n");
+        content.append("echo \"Shared library extension is: $SHLIB_EXT\"\n");
+
+        
+
 
 		return content.toString();
 	}
@@ -274,12 +334,18 @@ public class J2FCodeGenerator {
 	public String generateScriptFooter(File stagingDirectory, String currentDir) throws Exception {
 		StringBuffer content = new StringBuffer();
 		content.append("cd " + stagingDirectory.getAbsolutePath() + "\n");
-		content.append("make" + "\n");
+        content.append("export CFLAGS=\"-mmacosx-version-min=15.0 ${CFLAGS}\"\n");
+        content.append("export CXXFLAGS=\"-mmacosx-version-min=15.0 ${CXXFLAGS}\"\n");
+        content.append("export LDFLAGS=\"-mmacosx-version-min=15.0 ${LDFLAGS}\"\n");
+		
+        content.append("make" + "\n");
 
 		content.append("jar -cf peas-lang-interop.jar org" + "\n");
 		// copy Java and library file to current directory
 		content.append("cp " + "*.java" + " " + currentDir + "\n");
-		content.append("cp libpeas.so /opt/apps/lib" + "\n");
+        content.append("mkdir -p /opt/apps/lib\n");
+        content.append("mkdir -p /opt/apps/include\n");
+		content.append("cp libpeas.$SHLIB_EXT /opt/apps/lib" + "\n");
 		content.append("cp peas-lang-interop.jar /opt/apps/lib" + "\n");
 		content.append("cp *.mod /opt/apps/include" + "\n");
 

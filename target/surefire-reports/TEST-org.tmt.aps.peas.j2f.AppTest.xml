@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/Users/smichaels/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin17-binaries/releases/download/jdk-17%252B35/OpenJDK17-jdk_x64_mac_hotspot_17_35.tar.gz/jdk-17+35/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260128153448950_3.jar /Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire 2026-01-28T15-34-48_878-jvmRun1 surefire-20260128153448950_1tmp surefire_0-20260128153448950_2tmp"/>
+    <property name="sun.java.command" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260202185139501_3.jar /Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire 2026-02-02T18-51-39_427-jvmRun1 surefire-20260202185139501_1tmp surefire_0-20260202185139501_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/test-classes:/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/classes:/Users/smichaels/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/smichaels/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar:"/>
@@ -28,7 +28,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260128153448950_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260202185139501_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="17+35"/>

@@ -469,7 +469,7 @@ public class FileGenerator {
 		content.append("ffe_" + nameGenerator.getFortranObjectFileName() + ": " + "ffe_" + nameGenerator.getFortranSourceFileName()
 				+ " structures.mod \n");
 		content.append("\tgfortran  -ffree-line-length-none -fbounds-check -c -o " + "ffe_" + nameGenerator.getFortranObjectFileName() + " "
-				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form\n\n");
+				+ "ffe_" + nameGenerator.getFortranSourceFileName() + " $(FFLAGS)\n\n");
 
 
 		
@@ -480,7 +480,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form $(FORTRAN_INCLUDES) \n\n");
+				+ nameGenerator.getFortranSourceFileName() + " $(FFLAGS)\n\n");
 
 
 		return content.toString();
@@ -499,7 +499,7 @@ public class FileGenerator {
 		}
 		content.append("\n");
 		content.append("\tgfortran -fbounds-check -c -o " + nameGenerator.getFortranObjectFileName() + " "
-				+ nameGenerator.getFortranSourceFileName() + " -fPIC -ffree-form $(FORTRAN_INCLUDES) \n\n");
+				+ nameGenerator.getFortranSourceFileName() + " $(FFLAGS) \n\n");
 
 		return content.toString();
 
