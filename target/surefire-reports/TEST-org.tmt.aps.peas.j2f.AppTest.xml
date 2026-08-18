@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.tmt.aps.peas.j2f.AppTest" time="0.014" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="org.tmt.aps.peas.j2f.AppTest" time="0.019" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/Users/smichaels/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin17-binaries/releases/download/jdk-17%252B35/OpenJDK17-jdk_x64_mac_hotspot_17_35.tar.gz/jdk-17+35/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260817103244947_3.jar /Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire 2026-08-17T10-32-44_866-jvmRun1 surefire-20260817103244947_1tmp surefire_0-20260817103244947_2tmp"/>
+    <property name="sun.java.command" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260818111626218_3.jar /Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire 2026-08-18T11-16-26_138-jvmRun1 surefire-20260818111626218_1tmp surefire_0-20260818111626218_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/test-classes:/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/classes:/Users/smichaels/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/smichaels/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar:"/>
@@ -28,7 +28,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260817103244947_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/smichaels/Desktop/Prototyping/pcs-j2f/target/surefire/surefirebooter-20260818111626218_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="17+35"/>

@@ -198,141 +198,145 @@ public class J2FCodeGenerator {
 	}
 
     
-private static String generateMakefileCompilerSection() {
+private String generateMakefileCompilerSection() {
     return
-        "UNAME_S := $(shell uname -s)\n"
-        + "\n"
-        + "# Build mode:\n"
-        + "#\n"
-        + "# make TOOLCHAIN=gcc\n"
-        + "# C + JNI + Fortran\n"
-        + "#\n"
-        + "# make TOOLCHAIN=fortran\n"
-        + "# Fortran-only library\n"
-        + "#\n"
-        + "TOOLCHAIN ?= gcc\n"
-        + "\n"
-        + "FC := gfortran\n"
-        + "LD := gfortran\n"
-        + "\n"
-        + "PKG_CONFIG := pkg-config\n"
-        + "\n"
-        + "JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n"
-        + "\n"
-        + "ifeq ($(UNAME_S),Darwin)\n"
-        + "\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "# macOS\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "\n"
-        + "# Use the SDK selected by Apple's command-line tools.\n"
-        + "SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path)\n"
-        + "\n"
-        + "SHLIB_EXT := dylib\n"
-        + "\n"
-        + "ifeq ($(TOOLCHAIN),gcc)\n"
-        + "\n"
-        + "# C + JNI + Fortran build\n"
-        + "CC := gcc\n"
-        + "\n"
-        + "JNI_INC := -I$(JAVA_HOME)/include \\\n"
-        + "           -I$(JAVA_HOME)/include/darwin\n"
-        + "\n"
-        + "SHLIB_LDFLAGS := -dynamiclib \\\n"
-        + "                 -Wl,-undefined,dynamic_lookup\n"
-        + "\n"
-        + "else ifeq ($(TOOLCHAIN),fortran)\n"
-        + "\n"
-        + "# Fortran-only build\n"
-        + "CC :=\n"
-        + "\n"
-        + "JNI_INC :=\n"
-        + "\n"
-        + "SHLIB_LDFLAGS := -dynamiclib\n"
-        + "\n"
-        + "else\n"
-        + "\n"
-        + "$(error Unknown TOOLCHAIN='$(TOOLCHAIN)'. Use gcc or fortran)\n"
-        + "\n"
-        + "endif\n"
-        + "\n"
-        + "else ifeq ($(UNAME_S),Linux)\n"
-        + "\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "# Linux\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "\n"
-        + "CC := gcc\n"
-        + "FC := gfortran\n"
-        + "LD := gfortran\n"
-        + "\n"
-        + "JNI_INC := -I$(JAVA_HOME)/include \\\n"
-        + "           -I$(JAVA_HOME)/include/linux\n"
-        + "\n"
-        + "FORTRAN_INCLUDES := -I/usr/include -I/usr/local/include\n"
-        + "\n"
-        + "SHLIB_EXT := so\n"
-        + "SHLIB_LDFLAGS := -shared\n"
-        + "\n"
-        + "else\n"
-        + "\n"
-        + "$(error Unsupported operating system: $(UNAME_S))\n"
-        + "\n"
-        + "endif\n"
-        + "\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "# Compiler flags\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "\n"
-        + "CFLAGS += -fPIC $(JNI_INC)\n"
-        + "\n"
-        + "FFLAGS += -fPIC -ffree-form $(FORTRAN_INCLUDES)\n"
-        + "\n"
-        + "# On macOS, use the SDK selected by xcrun.\n"
-        + "ifeq ($(UNAME_S),Darwin)\n"
-        + "CFLAGS += -isysroot $(SDKROOT)\n"
-        + "FFLAGS += -isysroot $(SDKROOT)\n"
-        + "LDFLAGS += -isysroot $(SDKROOT)\n"
-        + "endif\n"
-        + "\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "# External libraries\n"
-        + "# ----------------------------------------------------------------------\n"
-        + "\n"
-        + "BLAS_LIBS   := $(shell $(PKG_CONFIG) --libs blas)\n"
-        + "LAPACK_LIBS := $(shell $(PKG_CONFIG) --libs lapack)\n"
-        + "FFTW_LIBS   := $(shell $(PKG_CONFIG) --libs fftw3)\n"
-        + "\n"
-        + "FFTW_CFLAGS := $(shell $(PKG_CONFIG) --cflags fftw3)\n"
-        + "FORTRAN_CFLAGS := $(shell $(PKG_CONFIG) --cflags blas lapack fftw3)\n"
-        + "\n"
-        + "# C/JNI code needs FFTW headers.\n"
-        + "CFLAGS += $(FFTW_CFLAGS)\n"
-        + "\n"
-        + "# Fortran code needs BLAS/LAPACK/FFTW headers.\n"
-        + "FFLAGS += $(FORTRAN_CFLAGS)\n"
-        + "\n"
-        + "# Linker flags.\n"
-        + "LDFLAGS += $(SHLIB_LDFLAGS)\n"
-        + "\n"
-        + "# Libraries.\n"
-        + "LIBS += $(BLAS_LIBS)\n"
-        + "LIBS += $(LAPACK_LIBS)\n"
-        + "LIBS += $(FFTW_LIBS)\n"
-        + "\n"
-        + "$(info ==============================)\n"
-        + "$(info TOOLCHAIN       = $(TOOLCHAIN))\n"
-        + "$(info UNAME_S         = $(UNAME_S))\n"
-        + "$(info SDKROOT         = $(SDKROOT))\n"
-        + "$(info CC              = $(CC))\n"
-        + "$(info FC              = $(FC))\n"
-        + "$(info LD              = $(LD))\n"
-        + "$(info PKG_CONFIG      = $(PKG_CONFIG))\n"
-        + "$(info CFLAGS          = $(CFLAGS))\n"
-        + "$(info FFLAGS          = $(FFLAGS))\n"
-        + "$(info LDFLAGS         = $(LDFLAGS))\n"
-        + "$(info LIBS            = $(LIBS))\n"
-        + "$(info ==============================)\n";
+        "UNAME_S := $(shell uname -s)\n" +
+        "\n" +
+        "# Build mode:\n" +
+        "#\n" +
+        "# make TOOLCHAIN=gcc\n" +
+        "# C + JNI + Fortran\n" +
+        "#\n" +
+        "# make TOOLCHAIN=fortran\n" +
+        "# Fortran-oriented toolchain\n" +
+        "#\n" +
+        "TOOLCHAIN ?= gcc\n" +
+        "\n" +
+        "FC := gfortran\n" +
+        "LD := gfortran\n" +
+        "\n" +
+        "PKG_CONFIG := pkg-config\n" +
+        "\n" +
+        "JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n" +
+        "\n" +
+        "ifeq ($(UNAME_S),Darwin)\n" +
+        "\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "# macOS\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "\n" +
+        "SHLIB_EXT := dylib\n" +
+        "\n" +
+        "# Use the SDK selected by xcrun rather than hard-coding an SDK version.\n" +
+        "SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path 2>/dev/null)\n" +
+        "\n" +
+        "# Both toolchains use JNI and Fortran.\n" +
+        "# TOOLCHAIN currently identifies the build mode; compiler selection\n" +
+        "# is kept explicit so it can be changed independently later.\n" +
+        "\n" +
+        "JNI_INC := -I$(JAVA_HOME)/include \\\n" +
+        "           -I$(JAVA_HOME)/include/darwin\n" +
+        "\n" +
+        "ifeq ($(TOOLCHAIN),gcc)\n" +
+        "\n" +
+        "# C + JNI + Fortran build\n" +
+        "CC := gcc\n" +
+        "FC := gfortran\n" +
+        "LD := gfortran\n" +
+        "\n" +
+        "SHLIB_LDFLAGS := -dynamiclib \\\n" +
+        "                 -Wl,-undefined,dynamic_lookup\n" +
+        "\n" +
+        "else ifeq ($(TOOLCHAIN),fortran)\n" +
+        "\n" +
+        "# Fortran-oriented build\n" +
+        "CC := gcc\n" +
+        "FC := gfortran\n" +
+        "LD := gfortran\n" +
+        "\n" +
+        "SHLIB_LDFLAGS := -dynamiclib\n" +
+        "\n" +
+        "else\n" +
+        "\n" +
+        "$(error Unknown TOOLCHAIN='$(TOOLCHAIN)'. Use gcc or fortran)\n" +
+        "\n" +
+        "endif\n" +
+        "\n" +
+        "else ifeq ($(UNAME_S),Linux)\n" +
+        "\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "# Linux\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "\n" +
+        "CC := gcc\n" +
+        "FC := gfortran\n" +
+        "LD := gfortran\n" +
+        "\n" +
+        "JNI_INC := -I$(JAVA_HOME)/include \\\n" +
+        "           -I$(JAVA_HOME)/include/linux\n" +
+        "\n" +
+        "FORTRAN_INCLUDES := -I/usr/include -I/usr/local/include\n" +
+        "\n" +
+        "SHLIB_EXT := so\n" +
+        "SHLIB_LDFLAGS := -shared\n" +
+        "\n" +
+        "else\n" +
+        "\n" +
+        "$(error Unsupported operating system: $(UNAME_S))\n" +
+        "\n" +
+        "endif\n" +
+        "\n" +
+        "CFLAGS += -fPIC $(JNI_INC)\n" +
+        "\n" +
+        "FFLAGS += -fPIC -ffree-form $(FORTRAN_INCLUDES)\n" +
+        "FFLAGS += -fopenmp\n" +
+        "\n" +
+        "# On macOS, use the SDK selected by xcrun.\n" +
+        "ifeq ($(UNAME_S),Darwin)\n" +
+        "CFLAGS += -isysroot $(SDKROOT)\n" +
+        "FFLAGS += -isysroot $(SDKROOT)\n" +
+        "LDFLAGS += -isysroot $(SDKROOT)\n" +
+        "endif\n" +
+        "\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "# External libraries\n" +
+        "# ----------------------------------------------------------------------\n" +
+        "\n" +
+        "BLAS_LIBS   := $(shell $(PKG_CONFIG) --libs blas 2>/dev/null)\n" +
+        "LAPACK_LIBS := $(shell $(PKG_CONFIG) --libs lapack 2>/dev/null)\n" +
+        "FFTW_LIBS   := $(shell $(PKG_CONFIG) --libs fftw3 2>/dev/null)\n" +
+        "\n" +
+        "FFTW_CFLAGS := $(shell $(PKG_CONFIG) --cflags fftw3 2>/dev/null)\n" +
+        "FORTRAN_CFLAGS := $(shell $(PKG_CONFIG) --cflags blas lapack fftw3 2>/dev/null)\n" +
+        "\n" +
+        "# C/JNI code needs FFTW headers.\n" +
+        "CFLAGS += $(FFTW_CFLAGS)\n" +
+        "\n" +
+        "# Fortran code needs BLAS/LAPACK/FFTW headers.\n" +
+        "FFLAGS += $(FORTRAN_CFLAGS)\n" +
+        "\n" +
+        "# Linker flags.\n" +
+        "LDFLAGS += $(SHLIB_LDFLAGS)\n" +
+        "\n" +
+        "# Libraries.\n" +
+        "LIBS += $(BLAS_LIBS)\n" +
+        "LIBS += $(LAPACK_LIBS)\n" +
+        "LIBS += $(FFTW_LIBS)\n" +
+        "\n" +
+        "$(info ==============================)\n" +
+        "$(info TOOLCHAIN       = $(TOOLCHAIN))\n" +
+        "$(info UNAME_S         = $(UNAME_S))\n" +
+        "$(info SDKROOT         = $(SDKROOT))\n" +
+        "$(info JAVA_HOME       = $(JAVA_HOME))\n" +
+        "$(info CC              = $(CC))\n" +
+        "$(info FC              = $(FC))\n" +
+        "$(info LD              = $(LD))\n" +
+        "$(info PKG_CONFIG      = $(PKG_CONFIG))\n" +
+        "$(info CFLAGS          = $(CFLAGS))\n" +
+        "$(info FFLAGS          = $(FFLAGS))\n" +
+        "$(info LDFLAGS         = $(LDFLAGS))\n" +
+        "$(info LIBS            = $(LIBS))\n" +
+        "$(info ==============================)\n";
 }
 	public String generateMakefileHeading() throws Exception {
 
