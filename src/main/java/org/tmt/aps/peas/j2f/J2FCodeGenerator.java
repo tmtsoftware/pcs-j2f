@@ -197,72 +197,149 @@ public class J2FCodeGenerator {
 		return tempDir;
 	}
 
+    
+private static String generateMakefileCompilerSection() {
+    return
+        "UNAME_S := $(shell uname -s)\n"
+        + "\n"
+        + "# Build mode:\n"
+        + "#\n"
+        + "# make TOOLCHAIN=gcc\n"
+        + "# C + JNI + Fortran\n"
+        + "#\n"
+        + "# make TOOLCHAIN=fortran\n"
+        + "# Fortran-only library\n"
+        + "#\n"
+        + "TOOLCHAIN ?= gcc\n"
+        + "\n"
+        + "FC := gfortran\n"
+        + "LD := gfortran\n"
+        + "\n"
+        + "PKG_CONFIG := pkg-config\n"
+        + "\n"
+        + "JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n"
+        + "\n"
+        + "ifeq ($(UNAME_S),Darwin)\n"
+        + "\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "# macOS\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "\n"
+        + "# Use the SDK selected by Apple's command-line tools.\n"
+        + "SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path)\n"
+        + "\n"
+        + "SHLIB_EXT := dylib\n"
+        + "\n"
+        + "ifeq ($(TOOLCHAIN),gcc)\n"
+        + "\n"
+        + "# C + JNI + Fortran build\n"
+        + "CC := gcc\n"
+        + "\n"
+        + "JNI_INC := -I$(JAVA_HOME)/include \\\n"
+        + "           -I$(JAVA_HOME)/include/darwin\n"
+        + "\n"
+        + "SHLIB_LDFLAGS := -dynamiclib \\\n"
+        + "                 -Wl,-undefined,dynamic_lookup\n"
+        + "\n"
+        + "else ifeq ($(TOOLCHAIN),fortran)\n"
+        + "\n"
+        + "# Fortran-only build\n"
+        + "CC :=\n"
+        + "\n"
+        + "JNI_INC :=\n"
+        + "\n"
+        + "SHLIB_LDFLAGS := -dynamiclib\n"
+        + "\n"
+        + "else\n"
+        + "\n"
+        + "$(error Unknown TOOLCHAIN='$(TOOLCHAIN)'. Use gcc or fortran)\n"
+        + "\n"
+        + "endif\n"
+        + "\n"
+        + "else ifeq ($(UNAME_S),Linux)\n"
+        + "\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "# Linux\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "\n"
+        + "CC := gcc\n"
+        + "FC := gfortran\n"
+        + "LD := gfortran\n"
+        + "\n"
+        + "JNI_INC := -I$(JAVA_HOME)/include \\\n"
+        + "           -I$(JAVA_HOME)/include/linux\n"
+        + "\n"
+        + "FORTRAN_INCLUDES := -I/usr/include -I/usr/local/include\n"
+        + "\n"
+        + "SHLIB_EXT := so\n"
+        + "SHLIB_LDFLAGS := -shared\n"
+        + "\n"
+        + "else\n"
+        + "\n"
+        + "$(error Unsupported operating system: $(UNAME_S))\n"
+        + "\n"
+        + "endif\n"
+        + "\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "# Compiler flags\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "\n"
+        + "CFLAGS += -fPIC $(JNI_INC)\n"
+        + "\n"
+        + "FFLAGS += -fPIC -ffree-form $(FORTRAN_INCLUDES)\n"
+        + "\n"
+        + "# On macOS, use the SDK selected by xcrun.\n"
+        + "ifeq ($(UNAME_S),Darwin)\n"
+        + "CFLAGS += -isysroot $(SDKROOT)\n"
+        + "FFLAGS += -isysroot $(SDKROOT)\n"
+        + "LDFLAGS += -isysroot $(SDKROOT)\n"
+        + "endif\n"
+        + "\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "# External libraries\n"
+        + "# ----------------------------------------------------------------------\n"
+        + "\n"
+        + "BLAS_LIBS   := $(shell $(PKG_CONFIG) --libs blas)\n"
+        + "LAPACK_LIBS := $(shell $(PKG_CONFIG) --libs lapack)\n"
+        + "FFTW_LIBS   := $(shell $(PKG_CONFIG) --libs fftw3)\n"
+        + "\n"
+        + "FFTW_CFLAGS := $(shell $(PKG_CONFIG) --cflags fftw3)\n"
+        + "FORTRAN_CFLAGS := $(shell $(PKG_CONFIG) --cflags blas lapack fftw3)\n"
+        + "\n"
+        + "# C/JNI code needs FFTW headers.\n"
+        + "CFLAGS += $(FFTW_CFLAGS)\n"
+        + "\n"
+        + "# Fortran code needs BLAS/LAPACK/FFTW headers.\n"
+        + "FFLAGS += $(FORTRAN_CFLAGS)\n"
+        + "\n"
+        + "# Linker flags.\n"
+        + "LDFLAGS += $(SHLIB_LDFLAGS)\n"
+        + "\n"
+        + "# Libraries.\n"
+        + "LIBS += $(BLAS_LIBS)\n"
+        + "LIBS += $(LAPACK_LIBS)\n"
+        + "LIBS += $(FFTW_LIBS)\n"
+        + "\n"
+        + "$(info ==============================)\n"
+        + "$(info TOOLCHAIN       = $(TOOLCHAIN))\n"
+        + "$(info UNAME_S         = $(UNAME_S))\n"
+        + "$(info SDKROOT         = $(SDKROOT))\n"
+        + "$(info CC              = $(CC))\n"
+        + "$(info FC              = $(FC))\n"
+        + "$(info LD              = $(LD))\n"
+        + "$(info PKG_CONFIG      = $(PKG_CONFIG))\n"
+        + "$(info CFLAGS          = $(CFLAGS))\n"
+        + "$(info FFLAGS          = $(FFLAGS))\n"
+        + "$(info LDFLAGS         = $(LDFLAGS))\n"
+        + "$(info LIBS            = $(LIBS))\n"
+        + "$(info ==============================)\n";
+}
 	public String generateMakefileHeading() throws Exception {
 
         StringBuffer heading = new StringBuffer();
 
-        heading.append("UNAME_S := $(shell uname -s)\n\n");
-        
-        heading.append("CC ?= gcc\n\n");
-        heading.append("FC ?= gfortran\n\n");
-        
-        heading.append("BLAS_LIBS := $(shell $(PKG_CONFIG) --libs blas)\n");
-        heading.append("FFTW_LIBS := $(shell $(PKG_CONFIG) --libs fftw3)\n\n");
-        
-        
-        
-        
-
-        heading.append("JAVA_HOME ?= $(shell /usr/libexec/java_home 2>/dev/null)\n\n");
-        heading.append("ifeq ($(UNAME_S),Darwin)\n");
-        
-        heading.append("\t# macOS\n");
-        heading.append("\tLD := clang\n");
-        
-        
-        heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/darwin\n");
-        heading.append("\tFORTRAN_INCLUDES=\n");
-        heading.append("\tSHLIB_EXT     := dylib  \n");
-        heading.append("\tSHLIB_LDFLAGS := -dynamiclib -Wl,-undefined,dynamic_lookup  \n");
-        heading.append("\t# OpenMP (Homebrew LLVM + libomp)  \n");
-        heading.append("\tOMP_CFLAGS  := -Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include  \n");
-        heading.append("\tOMP_LDFLAGS := -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/libomp/lib -lomp\n");
-        
-        heading.append("\tGFORTRAN_LIBDIR := $(shell gfortran -print-file-name=libgfortran.dylib | xargs dirname)\n");
-        heading.append("\tFORTRAN_LIBS := -L$(GFORTRAN_LIBDIR) -Wl,-rpath,$(GFORTRAN_LIBDIR) -lgfortran\n");
-        
-        heading.append("else ifeq ($(UNAME_S),Linux)\n");
-        
-        heading.append("\t# Linux\n");
-        heading.append("\tLD := $FC\n");
-
-        heading.append("\tJNI_INC = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux\n");
-        heading.append("\tFORTRAN_INCLUDES = -I/usr/include -I/usr/local/include\n");
-        heading.append("\tSHLIB_EXT     := so  \n");
-        heading.append("\tSHLIB_LDFLAGS := -shared  \n");
-        heading.append("\tOMP_CFLAGS  := -fopenmp  \n");
-        heading.append("\tOMP_LDFLAGS := -fopenmp  \n");
-        heading.append("\tFORTRAN_LIBS := \n");
-        
-        heading.append("endif\n\n");
-        heading.append("CFLAGS += -fPIC $(JNI_INC)\n");
-        
-        heading.append("FFLAGS += -fPIC -ffree-form $(FORTRAN_INCLUDES)\n\n");
-        heading.append("# handle external libraries\n\n");
-        heading.append("FFTW_CFLAGS := $(shell pkg-config --cflags fftw3)\n");
-        heading.append("FFTW_LIBS   := $(shell pkg-config --libs fftw3)\n\n");
-        heading.append("PKGS = fftw3 blas lapack\n\n");
-        heading.append("CFLAGS  += $(shell pkg-config --cflags $(PKGS))\n");
-        heading.append("FFLAGS  += $(shell pkg-config --cflags $(PKGS))\n");
-        
-        heading.append("CFLAGS := $(filter-out -fopenmp,$(CFLAGS))\n\n");     
-        
-
-        heading.append("LDFLAGS += $(shell pkg-config --cflags $(PKGS))\n");
-        heading.append("LDFLAGS += $(SHLIB_LDFLAGS) $(OMP_LDFLAGS)\n\n");
-            
-        heading.append("LIBS += $(BLAS_LIBS) $(FFTW_LIBS) $(OMP_LDFLAGS) $(FORTRAN_LIBS)\n\n");
-        
+        heading.append(generateMakefileCompilerSection() + "\n\n");
+                
 		// Generate input string
 		
 		heading.append("products: libpeas.$(SHLIB_EXT)\n\n");
@@ -273,7 +350,7 @@ public class J2FCodeGenerator {
 		}
 		heading.append("logWrite.o" + " \\\n");
 		heading.deleteCharAt(heading.length() - 2);
-		heading.append("\t$(LD) $(SHLIB_LDFLAGS) -o libpeas.$(SHLIB_EXT) ");
+		heading.append("\t$(LD) $(LDFLAGS) -o libpeas.$(SHLIB_EXT) ");
 		for (String objectFileName : objectFileNameList) {
 			heading.append(objectFileName + " \\\n");
 		}
@@ -342,7 +419,7 @@ public class J2FCodeGenerator {
 
 		content.append("jar -cf peas-lang-interop.jar org" + "\n");
 		// copy Java and library file to current directory
-		content.append("cp " + "*.java" + " " + currentDir + "\n");
+		content.append("cp " + "org/tmt/aps/peas/lang/interop/*.java ${GIT_HOME}/pcs-fortran/src/main/java/org/tmt/aps/peas/lang/interop" + "\n");
         content.append("mkdir -p /opt/apps/lib\n");
         content.append("mkdir -p /opt/apps/include\n");
 		content.append("cp libpeas.$SHLIB_EXT /opt/apps/lib" + "\n");

@@ -2,7 +2,7 @@
 
 ## Build Instructions
 
-cd <pcs-j2f install dir>
+cd $GIT_HOME/pcs-j2d 
 
 ```mvn clean package```
 
