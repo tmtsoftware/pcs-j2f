@@ -2,8 +2,13 @@
 
 ## Build Instructions
 
-cd $GIT_HOME/pcs-j2d 
+The build instructions assume that the environment has GIT_HOME defined as the directory where pcs-j2f project is installed.
 
-```mvn clean package```
+```
+cd $GIT_HOME/pcs-j2f 
+
+mvn clean package
+
+```
 
 The usage of pcs-j2f is described in the pcs-fortran project
