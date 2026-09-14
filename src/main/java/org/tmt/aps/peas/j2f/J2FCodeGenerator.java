@@ -311,9 +311,11 @@ private String generateMakefileCompilerSection() {
         "\n" +
         "# C/JNI code needs FFTW headers.\n" +
         "CFLAGS += $(FFTW_CFLAGS)\n" +
+        "CFLAGS += -arch amd64\n" +
         "\n" +
         "# Fortran code needs BLAS/LAPACK/FFTW headers.\n" +
         "FFLAGS += $(FORTRAN_CFLAGS)\n" +
+        "FFLAGS += -I/usr/local/include -I/opt/local/include\n" +
         "\n" +
         "# Linker flags.\n" +
         "LDFLAGS += $(SHLIB_LDFLAGS)\n" +

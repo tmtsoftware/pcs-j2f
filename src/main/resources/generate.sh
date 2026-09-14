@@ -1,14 +1,16 @@
 #!/bin/bash
 
-export GIT_HOME=~/Desktop/Prototyping
-
 rm -rf /opt/apps/j2f/staging/*
 mkdir -p /opt/apps/j2f/staging/org/tmt/aps/peas/lang/interop
 
 # uncomment if pcs-fortran is not the latest "jar build" and RetVal comes from pcs-web
-#cp $GIT_HOME/pcs-web/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java $1/org/tmt/aps/peas/lang/interop/
-# uncomment if pcs-fortran is the latest "jar build" and RetVal comes from pcs-fortrancp
-cp $GIT_HOME/pcs-fortran/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java $1/org/tmt/aps/peas/lang/interop/
+if [ -f "$GIT_HOME/pcs-fortran/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java" ]; then
+    cp "$GIT_HOME/pcs-fortran/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java" \
+       "$1/org/tmt/aps/peas/lang/interop/"
+else
+    cp "$GIT_HOME/pcs-web/src/main/java/org/tmt/aps/peas/lang/interop/RetVal.java" \
+       "$1/org/tmt/aps/peas/lang/interop/"
+fi
 
 cp $GIT_HOME/pcs-fortran/src/structures.f90 $1
 cp $GIT_HOME/pcs-fortran/src/logWrite.f90 $1
